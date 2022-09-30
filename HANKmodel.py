@@ -3,8 +3,8 @@ import numpy as np
 from EconModel import EconModelClass
 from GEModelTools import GEModelClass
 
-import steady_state
-import household_problem
+#import steady_state
+#import household_problem
 
 class HANCModelClass(EconModelClass,GEModelClass):    
 
@@ -37,7 +37,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
             'r','tau'] 
 
         # e. functions
-        self.solve_hh_backwards = household_problem.solve_hh_backwards
+        #self.solve_hh_backwards = household_problem.solve_hh_backwards
         self.block_pre = None # not used today
         self.block_post = None # not used today
 
@@ -52,17 +52,17 @@ class HANCModelClass(EconModelClass,GEModelClass):
         # a. preferences
         par.beta = 0.96 # discount factor
         par.sigma = 2.0 # CRRA coefficient
-        par.nu = 
-        par.varphi = 
-        par.gamma = 
-        par.alpha = 
+        par.nu = 0.0
+        par.varphi =0.0 
+        par.gamma = 0.0
+        par.alpha = 0.0
 
 
         # b. income parameters
         par.rho_z = 0.96 # AR(1) parameter
         par.sigma_psi = 0.10 # std. of shock
-        par.mu_psi = 
-        par.tau = 
+        par.mu_psi = 0.0
+        par.tau = 0.0
 
         # c. production
         par.alpha_L = 0.36 # cobb-douglas for sector L
@@ -91,12 +91,12 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.tol_solve = 1e-12 # tolerance when solving household problem
         par.tol_simulate = 1e-12 # tolerance when simulating household problem
         
-    def allocate(self):
-        """ allocate model """
-
-        par = self.par
-
-        self.allocate_GE() # should always be called here
-
-    prepare_hh_ss = steady_state.prepare_hh_ss
-    find_ss = steady_state.find_ss
+    #def allocate(self):
+    #    """ allocate model """
+#
+    #    par = self.par
+#
+    #    self.allocate_GE() # should always be called here
+#
+    #prepare_hh_ss = steady_state.prepare_hh_ss
+    #find_ss = steady_state.find_ss
