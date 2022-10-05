@@ -22,12 +22,15 @@ def block_pre(par,ini,ss,path,ncols=1):
         i = path.i[ncol,:]
         N_hh = path.N_hh[ncol,:]
         N = path.N[ncol,:]
+        M = path.M[ncol,:]
         NKPC_res = path.NKPC_res[ncol,:]
         pi = path.pi[ncol,:]
         r = path.r[ncol,:]
         istar = path.istar[ncol,:]
         tau = path.tau[ncol,:]
         w = path.w[ncol,:]
+        pm = path.pm[ncol,:]
+        mc = path.mc[ncol,:]
         Y = path.Y[ncol,:]
         Z = path.Z[ncol,:]
 
@@ -36,10 +39,12 @@ def block_pre(par,ini,ss,path,ncols=1):
         #################
 
         # a. firms
-        N[:] = Y/Z
+        mc[:] = ((1-par.alpha)*(w*Z)**(1-par.gamma)+par.alpha*pm**(1-par.gamma))**(1/(1-par.gamma))
+        N[:] = (w/mc)**(-par.gamma)*(1-par.alpha)*Z**(1-par.gamma)*Y
+        M[:] = (pm/mc)**(-par.gamma)*par.alpha*Y
 
         adjcost[:] = par.mu/(par.mu-1)/(2*par.kappa)*np.log(1+pi)**2*Y
-        d[:] = Y-w*N-adjcost
+        d[:] = Y-w*N-pm*M-adjcost
 
         # b. monetary policy
         i[:] = istar + par.phi*pi + par.phi_y*(Y-ss.Y)
