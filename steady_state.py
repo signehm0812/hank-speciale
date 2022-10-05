@@ -73,9 +73,9 @@ def evaluate_ss(model,do_print=False):
 
     # d. firms
     ss.Y = (par.alpha**(1/par.gamma)*ss.M**((par.gamma-1)/par.gamma)+(1-par.alpha)**(1/par.gamma)*(ss.Z*ss.N)**((par.gamma-1)/par.gamma))**(par.gamma/(par.gamma-1))
-    ss.w = ss.Z/par.mu
+    ss.w = ((par.mu**(par.gamma-1)-par.alpha*par.pm**(1-par.gamma))*(ss.Z**par.gamma/(1-par.alpha)))**(1/(1-par.gamma))
     ss.adjcost = 0.0
-    ss.d = ss.Y-ss.w*ss.N-ss.pm*ss.M-ss.adjcost
+    ss.d = ss.Y-ss.w*ss.N-par.pm*ss.M-ss.adjcost
     
     # e. government
     ss.tau = ss.r*ss.B + ss.G
@@ -85,7 +85,7 @@ def evaluate_ss(model,do_print=False):
     model.simulate_hh_ss(do_print=do_print)
 
     # g. market clearing
-    ss.C = ss.Y-ss.G-ss.adjcost
+    ss.C = ss.Y-ss.G-ss.adjcost-ss.M*par.pm
 
 def objective_ss(x,model,do_print=False):
     """ objective function for finding steady state """

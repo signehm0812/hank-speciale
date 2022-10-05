@@ -50,7 +50,6 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'istar',
             'tau',
             'w',
-            'pm',
             'mc',
             'Y',
             'Z',] 
@@ -90,10 +89,11 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         # c. production
         par.alpha = 0.36
-        par.gamma = 0.6
+        par.gamma = 1.02
         par.mu = 0.4
         par.kappa = 0.1
         par.Gamma_ss = 1.0
+        par.pm = 0.001
 
         #par.alpha_L = 0.36 # cobb-douglas for sector L
         #par.alpha_N = 0.27 # cobb-douglas for sector N
