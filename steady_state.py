@@ -60,6 +60,7 @@ def evaluate_ss(model,do_print=False):
     # a. fixed
     ss.Z = 1.0
     ss.N = 1.0
+    ss.M = 1.0
     ss.pi = 0.0
     
     # b. targets
@@ -71,10 +72,10 @@ def evaluate_ss(model,do_print=False):
     ss.i = ss.r = ss.istar = 0.0
 
     # d. firms
-    ss.Y = ss.Z*ss.N
+    ss.Y = (par.alpha**(1/par.gamma)*ss.M**((par.gamma-1)/par.gamma)+(1-par.alpha)**(1/par.gamma)*(ss.Z*ss.N)**((par.gamma-1)/par.gamma))**(par.gamma/(par.gamma-1))
     ss.w = ss.Z/par.mu
     ss.adjcost = 0.0
-    ss.d = ss.Y-ss.w*ss.N-ss.adjcost
+    ss.d = ss.Y-ss.w*ss.N-ss.pm*ss.M-ss.adjcost
     
     # e. government
     ss.tau = ss.r*ss.B + ss.G
