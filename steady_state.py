@@ -43,10 +43,11 @@ def prepare_hh_ss(model):
     for i_z in range(par.Nz):
 
         z = par.z_grid[i_z]
-        T = ss.d*z - ss.tau*z
-        n = 1.0*z
+        T = (ss.d_N+ss.d_L)*z - ss.tau*z
+        n_N = ss.ell_N*z 
+        n_L = ss.ell_L*z
 
-        c = (1+ss.r)*par.a_grid + ss.w*n + T
+        c = (1+ss.r)*par.a_grid + (ss.w_N*n_N+ss.w_L*n_L) + T
         va[0,i_z,:] = c**(-par.sigma)
 
     ss.vbeg_a[0] = ss.z_trans[0]@va[0]
@@ -59,6 +60,7 @@ def evaluate_ss(model,do_print=False):
 
     # a. fixed
     ss.Z = 1.0
+    ss.N = ss.N_N + ss.N_L
     ss.N = 1.0
     ss.M = 1.0
     ss.pi = 0.0
@@ -68,14 +70,21 @@ def evaluate_ss(model,do_print=False):
     ss.A = ss.B = par.B_target_ss
     ss.G = par.G_target_ss
 
-    # c.. monetary policy
+    # c. monetary policy
     ss.i = ss.r = ss.istar = 0.0
 
     # d. firms
-    ss.Y = (par.alpha**(1/par.gamma)*ss.M**((par.gamma-1)/par.gamma)+(1-par.alpha)**(1/par.gamma)*(ss.Z*ss.N)**((par.gamma-1)/par.gamma))**(par.gamma/(par.gamma-1))
-    ss.w = ((par.mu**(par.gamma-1)-par.alpha*par.pm**(1-par.gamma))*(ss.Z**par.gamma/(1-par.alpha)))**(1/(1-par.gamma))
-    ss.adjcost = 0.0
-    ss.d = ss.Y-ss.w*ss.N-par.pm*ss.M-ss.adjcost
+    ss.Y_L = (par.alpha_L**(1/par.gamma_L)*ss.M**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)**(1/par.gamma_L)*(ss.Z*ss.N_L)**((par.gamma_L-1)/par.gamma_L))**(par.gamma_L/(par.gamma_L-1))
+    ss.Y_N = (par.alpha_N**(1/par.gamma_N)*ss.M**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)**(1/par.gamma_N)*(ss.Z*ss.N_N)**((par.gamma_N-1)/par.gamma_N))**(par.gamma_N/(par.gamma_N-1))
+    ss.Y = ss.Y_N + ss.Y_L
+    ss.w_N = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*par.pm**(1-par.gamma_N))*(ss.Z**par.gamma_N/(1-par.alpha_N)))**(1/(1-par.gamma_N))
+    ss.w_L = ((par.mu_L**(par.gamma_L-1)-par.alpha_L*par.pm**(1-par.gamma_L))*(ss.Z**par.gamma_L/(1-par.alpha_L)))**(1/(1-par.gamma_L))
+    ss.adjcost_N = 0.0
+    ss.adjcost_L = 0.0
+    ss.adjcost = ss.adjcost_N + ss.adjcost_L
+    ss.d_N = ss.Y_N-ss.w_N*ss.N_N-par.pm*ss.M-ss.adjcost_N
+    ss.d_L = ss.Y_L-ss.w_L*ss.N_L-par.pm*ss.M-ss.adjcost_L
+
     
     # e. government
     ss.tau = ss.r*ss.B + ss.G
@@ -98,7 +107,7 @@ def objective_ss(x,model,do_print=False):
 
     evaluate_ss(model,do_print=do_print)
     
-    return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N])
+    return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N,ss.w_N-ss.w_L])
 
 def find_ss(model,do_print=False):
     """ find the steady state """
@@ -123,3 +132,4 @@ def find_ss(model,do_print=False):
         print(f'Discrepancy in B = {ss.A-ss.A_hh:12.8f}')
         print(f'Discrepancy in C = {ss.C-ss.C_hh:12.8f}')
         print(f'Discrepancy in N = {ss.N-ss.N_hh:12.8f}')
+        print(f'Discrepancy in w = {ss.w_N-ss.w_L:12.8f}')

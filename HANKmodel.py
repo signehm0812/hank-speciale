@@ -20,9 +20,9 @@ class HANKModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['r','tau','w','d'] #['r','tau','w_L','w_N','d_L','d_N'] # direct inputs
+        self.inputs_hh = ['r','tau','w_L','w_N','d_L','d_N'] #['r','tau','w_L','w_N','d_L','d_N'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs (not used)
-        self.outputs_hh = ['a','c','ell','n'] #['a','c','ell_N','ell_L','n_N','n_L'] # outputs
+        self.outputs_hh = ['a','c'] #['a','c','ell_N','ell_L','n_N','n_L'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
   
         # c. GE
@@ -38,21 +38,33 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'clearing_A',
             'clearing_C',
             'clearing_N',
-            'd',
+            'd_N',
+            'd_L',
             'G',
             'i',
+            'N_N',
+            'N_L',
             'N',
+            'ell_N',
+            'ell_L',
             'M',
-            'NKPC_res',
+            'NKPC_res_N',
+            'NKPC_res_L',
             'pi',
+            'adjcost_N',
+            'adjcost_L',
             'adjcost',
             'r',
             'istar',
             'tau',
+            'w_L',
+            'w_N',
             'w',
-            'mc',
-            'Y',
-            'Z',] 
+            'mc_N',
+            'mc_L',
+            'Y_N',
+            'Y_L',
+            'Z'] 
 
         # e. functions
         self.solve_hh_backwards = household_problem.solve_hh_backwards
@@ -64,7 +76,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         par = self.par
 
-        par.Nfix = 1 # number of fixed discrete states (either work in L or N sector)
+        par.Nfix = 2 # number of fixed discrete states (either work in L or N sector)
         par.Nz = 7 # number of stochastic discrete states (here productivity)
 
         # a. preferences
@@ -82,28 +94,29 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
 
         # b. income parameters
-        par.rho_z = 0.96 # AR(1) parameter
-        par.sigma_psi = np.sqrt(0.50**2*(1-par.rho_z**2)) # std. of shock
-        par.mu_psi = 0.0 # mean of shock
-        par.tau = 0.0 # tax
+        par.rho_z        = 0.96                                 # AR(1) parameter
+        par.sigma_psi    = np.sqrt(0.50**2*(1-par.rho_z**2))    # std. of shock
+        par.mu_psi       = 0.0                                  # mean of shock
+        par.tau          = 0.0                                  # tax
 
         # c. production
-        par.alpha = 0.36
-        par.gamma = 0.8 #Elasticity of substitution
-        par.mu = 1.2 # mark-up
-        par.kappa = 0.1 #  slope of Phillips curve
-        par.Gamma_ss = 1.0
-        par.pm = 1.0
+        #par.alpha        = 0.36
+        #par.gamma        = 0.8                                  # Elasticity of substitution
+        #par.mu           = 1.2                                  # mark-up
+        #par.kappa        = 0.1                                  # slope of Phillips curve
+        #par.Gamma_ss     = 1.0
+        #par.pm           = 1.0
 
-        #par.alpha_L = 0.36 # cobb-douglas for sector L
-        #par.alpha_N = 0.27 # cobb-douglas for sector N
-        #par.gamma_L = 0.6 # substitution elasticity for sector L
-        #par.gamma_N = 1.02 # substitution elasticity for sector N
-        #par.mu_L = 0.4 # mark-up for sector L
-        #par.mu_N = 0.2 # mark-up for sector N
-        #par.kappa_L = 0.1 # price rigidity for sector L
-        #par.kappa_N = 0.2 #price rigidity for sector N
-        #par.Gamma_ss = 1.0 # direct approach: technology level in steady state
+        par.alpha_L      = 0.36                                 # cobb-douglas for sector L
+        par.alpha_N      = 0.27                                 # cobb-douglas for sector N
+        par.gamma_L      = 0.8                                  # substitution elasticity for sector L
+        par.gamma_N      = 1.02                                 # substitution elasticity for sector N
+        par.mu_L         = 1.4                                  # mark-up for sector L
+        par.mu_N         = 1.1                                  # mark-up for sector N
+        par.kappa_L      = 0.1                                  # price rigidity for sector L
+        par.kappa_N      = 0.2                                  # price rigidity for sector N
+        par.Gamma_ss     = 1.0                                  # direct approach: technology level in steady state
+        par.pm           = 1.0 
 
         # d. government
         par.phi = 1.5 # Taylor rule coefficient on inflation
