@@ -83,17 +83,17 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         # b. income parameters
         par.rho_z = 0.96 # AR(1) parameter
-        par.sigma_psi = 0.10 # std. of shock
+        par.sigma_psi = np.sqrt(0.50**2*(1-par.rho_z**2)) # std. of shock
         par.mu_psi = 0.0 # mean of shock
         par.tau = 0.0 # tax
 
         # c. production
         par.alpha = 0.36
-        par.gamma = 1.02
-        par.mu = 0.4
-        par.kappa = 0.1
+        par.gamma = 0.8 #Elasticity of substitution
+        par.mu = 1.2 # mark-up
+        par.kappa = 0.1 #  slope of Phillips curve
         par.Gamma_ss = 1.0
-        par.pm = 0.001
+        par.pm = 1.0
 
         #par.alpha_L = 0.36 # cobb-douglas for sector L
         #par.alpha_N = 0.27 # cobb-douglas for sector N
@@ -110,7 +110,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.phi_y = 0.0 # Taylor rule coefficient on output
 
         par.G_target_ss = 0.0 # government spending
-        par.B_target_ss = 0.0 # bond supply
+        par.B_target_ss = 5.6 # bond supply
 
         # f. grids         
         par.a_min = 0.0 # minimum point in grid for a

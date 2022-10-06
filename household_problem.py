@@ -23,6 +23,10 @@ def solve_hh_backwards(par,z_trans,w,r,d,tau,vbeg_a_plus,vbeg_a,a,c,ell,n):
             c_endo = (par.beta*vbeg_a_plus[i_fix,i_z,:])**(-1/par.sigma)
             ell_endo = fac*(par.beta*vbeg_a_plus[i_fix,i_z,:])**(1/par.nu)
             n_endo = ell_endo*z
+            #ell_exo = 1 
+            #ell_N = 0.3
+            #ell_L = ell_exo - ell_N
+            #n_endo = ell_exo*par.z_grid[i_z]
 
             # iii. re-interpolate
             m_endo = c_endo + par.a_grid - w*n_endo - T
