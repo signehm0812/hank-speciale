@@ -62,6 +62,7 @@ def evaluate_ss(model,do_print=False):
     ss.Z = 1.0
     ss.N = ss.N_N + ss.N_L
     ss.N = 1.0
+    ss.M = ss.M_N + ss.M_L
     ss.M = 1.0
     ss.pi = 0.0
     
@@ -74,17 +75,18 @@ def evaluate_ss(model,do_print=False):
     ss.i = ss.r = ss.istar = 0.0
 
     # d. firms
-    ss.Y_L = (par.alpha_L**(1/par.gamma_L)*ss.M**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)**(1/par.gamma_L)*(ss.Z*ss.N_L)**((par.gamma_L-1)/par.gamma_L))**(par.gamma_L/(par.gamma_L-1))
-    ss.Y_N = (par.alpha_N**(1/par.gamma_N)*ss.M**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)**(1/par.gamma_N)*(ss.Z*ss.N_N)**((par.gamma_N-1)/par.gamma_N))**(par.gamma_N/(par.gamma_N-1))
-    ss.Y = ss.Y_N + ss.Y_L
+    ss.Y_N = (par.alpha_N**(1/par.gamma_N)*ss.M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)**(1/par.gamma_N)*(ss.Z*ss.N_N)**((par.gamma_N-1)/par.gamma_N))**(par.gamma_N/(par.gamma_N-1))
     ss.w_N = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*par.pm**(1-par.gamma_N))*(ss.Z**par.gamma_N/(1-par.alpha_N)))**(1/(1-par.gamma_N))
-    ss.w_L = ((par.mu_L**(par.gamma_L-1)-par.alpha_L*par.pm**(1-par.gamma_L))*(ss.Z**par.gamma_L/(1-par.alpha_L)))**(1/(1-par.gamma_L))
+    ss.d_N = ss.Y_N-ss.w_N*ss.N_N-par.pm*ss.M_N-ss.adjcost_N
     ss.adjcost_N = 0.0
+    
+    ss.Y_L = (par.alpha_L**(1/par.gamma_L)*ss.M_L**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)**(1/par.gamma_L)*(ss.Z*ss.N_L)**((par.gamma_L-1)/par.gamma_L))**(par.gamma_L/(par.gamma_L-1))
+    ss.w_L = ((par.mu_L**(par.gamma_L-1)-par.alpha_L*par.pm**(1-par.gamma_L))*(ss.Z**par.gamma_L/(1-par.alpha_L)))**(1/(1-par.gamma_L))
+    ss.d_L = ss.Y_L-ss.w_L*ss.N_L-par.pm*ss.M_L-ss.adjcost_L
     ss.adjcost_L = 0.0
-    ss.adjcost = ss.adjcost_N + ss.adjcost_L
-    ss.d_N = ss.Y_N-ss.w_N*ss.N_N-par.pm*ss.M-ss.adjcost_N
-    ss.d_L = ss.Y_L-ss.w_L*ss.N_L-par.pm*ss.M-ss.adjcost_L
 
+    ss.adjcost = ss.adjcost_N + ss.adjcost_L
+    ss.Y = ss.Y_N + ss.Y_L
     
     # e. government
     ss.tau = ss.r*ss.B + ss.G

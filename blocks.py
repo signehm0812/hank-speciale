@@ -26,6 +26,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         N_hh = path.N_hh[ncol,:]
         N_N = path.N_N[ncol,:]
         N_L = path.N_L[ncol,:]
+        M = path.M[ncol,:]
         M_N = path.M_N[ncol,:]
         M_L = path.M_L[ncol,:]
         NKPC_res_N = path.NKPC_res_N[ncol,:]
@@ -64,6 +65,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         d_L[:] = Y_L-w_L*N_L-par.pm*M_L-adjcost_L
 
         Y = Y_N+Y_L
+        M = M_N+M_L
         adjcost = adjcost_N+adjcost_L
 
         # b. monetary policy
@@ -78,7 +80,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         
         # d. aggregates
         A[:] = B[:] = ss.B
-        C[:] = Y-G-adjcost
+        C[:] = Y-G-adjcost-par.pm*M
 
 @nb.njit
 def block_post(par,ini,ss,path,ncols=1):

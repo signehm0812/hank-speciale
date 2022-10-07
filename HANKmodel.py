@@ -48,6 +48,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'ell_N',
             'ell_L',
             'M',
+            'M_N',
+            'M_L',
             'NKPC_res_N',
             'NKPC_res_L',
             'pi',
