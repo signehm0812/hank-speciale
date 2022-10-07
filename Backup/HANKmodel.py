@@ -27,7 +27,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
   
         # c. GE
         self.shocks = [] # exogenous shocks
-        self.unknowns = [] # endogenous unknowns
+        self.unknowns = [] # endogenous unknowns  
         self.targets = [] # targets = 0
 
         # d. all variables

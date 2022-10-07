@@ -26,7 +26,7 @@ def prepare_hh_ss(model):
     par.z_grid[:],ss.z_trans[0,:,:],e_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,n=par.Nz)
 
     ###########################
-    # 2. initial distribution #
+    # 2. initial distribution #  
     ###########################
     
     for i_fix in range(par.Nfix):

@@ -26,7 +26,7 @@ def solve_hh_backwards(par,z_trans,r,tau,w_L,w_N,d_L,d_N,vbeg_a_plus,vbeg_a,a,c)
             # ii. interpolation to fixed grid
             #m = (1+r)*par.a_grid + (w_L*ell_L+w_N*ell_N)*z
             m = (1+r)*par.a_grid + (w_L+w_N)*z
-            interp_1d_vec(m_endo,par.a_grid,m,a[i_fix,i_z])
+            interp_1d_vec(m_endo,par.a_grid,m,a[i_fix,i_z])  
             a[i_fix,i_z,:] = np.fmax(a[i_fix,i_z,:],0.0) # enforce borrowing constraint
             c[i_fix,i_z] = m-a[i_fix,i_z] #skal noget tilføjes her??
 
