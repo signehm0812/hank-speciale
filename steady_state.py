@@ -60,15 +60,12 @@ def evaluate_ss(model,do_print=False):
 
     # a. fixed
     ss.Z = 1.0
-    ss.N = ss.N_N + ss.N_L
     ss.N = 1.0
-    ss.M = ss.M_N + ss.M_L
-    ss.M = 1.0
     ss.pi = 0.0
     
     # b. targets
     ss.r = par.r_target_ss
-    ss.A = ss.B = par.B_target_ss
+    ss.A = ss.B = par.B_target_ss #should be ss.A_hh?
     ss.G = par.G_target_ss
 
     # c. monetary policy
@@ -78,16 +75,22 @@ def evaluate_ss(model,do_print=False):
     ss.Y_N = (par.alpha_N**(1/par.gamma_N)*ss.M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)**(1/par.gamma_N)*(ss.Z*ss.N_N)**((par.gamma_N-1)/par.gamma_N))**(par.gamma_N/(par.gamma_N-1))
     ss.w_N = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*par.pm**(1-par.gamma_N))*(ss.Z**par.gamma_N/(1-par.alpha_N)))**(1/(1-par.gamma_N))
     ss.d_N = ss.Y_N-ss.w_N*ss.N_N-par.pm*ss.M_N-ss.adjcost_N
+    ss.mc_N = ((1-par.alpha_N)*(ss.w_N*ss.Z)**(1-par.gamma_N)+par.alpha_N*par.pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
+    ss.M_N = (par.pm/ss.mc_N)**(-par.gamma_N)*par.alpha_N*ss.Y_N
     ss.adjcost_N = 0.0
     
     ss.Y_L = (par.alpha_L**(1/par.gamma_L)*ss.M_L**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)**(1/par.gamma_L)*(ss.Z*ss.N_L)**((par.gamma_L-1)/par.gamma_L))**(par.gamma_L/(par.gamma_L-1))
     ss.w_L = ((par.mu_L**(par.gamma_L-1)-par.alpha_L*par.pm**(1-par.gamma_L))*(ss.Z**par.gamma_L/(1-par.alpha_L)))**(1/(1-par.gamma_L))
     ss.d_L = ss.Y_L-ss.w_L*ss.N_L-par.pm*ss.M_L-ss.adjcost_L
+    ss.mc_L = ((1-par.alpha_L)*(ss.w_L*ss.Z)**(1-par.gamma_L)+par.alpha_L*par.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
+    ss.M_L = (par.pm/ss.mc_L)**(-par.gamma_L)*par.alpha_L*ss.Y_L
     ss.adjcost_L = 0.0
 
     ss.adjcost = ss.adjcost_N + ss.adjcost_L
     ss.Y = ss.Y_N + ss.Y_L
-    
+    ss.M = ss.M_N + ss.M_L
+    ss.N = ss.N_N + ss.N_L
+
     # e. government
     ss.tau = ss.r*ss.B + ss.G
 
@@ -105,11 +108,11 @@ def objective_ss(x,model,do_print=False):
     ss = model.ss
 
     par.beta = x[0]
-    par.varphi = x[1]
+    #par.varphi = x[1]
 
     evaluate_ss(model,do_print=do_print)
     
-    return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N,ss.w_N-ss.w_L])
+    return np.array([ss.A_hh-ss.B,ss.w_N-ss.w_L]) #,ss.N_hh-ss.N
 
 def find_ss(model,do_print=False):
     """ find the steady state """
@@ -119,7 +122,7 @@ def find_ss(model,do_print=False):
 
     # a. find steady state
     t0 = time.time()
-    res = optimize.root(objective_ss,[par.beta, par.varphi],method='hybr',tol=par.tol_ss,args=(model))
+    res = optimize.root(objective_ss,[par.beta],method='hybr',tol=par.tol_ss,args=(model))
 
     # final evaluation
     objective_ss(res.x,model)
