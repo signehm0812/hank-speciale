@@ -3,7 +3,7 @@ import numpy as np
 from EconModel import EconModelClass
 from GEModelTools import GEModelClass
 
-import steady_state_copy
+import steady_state
 import household_problem
 import blocks
 
@@ -112,7 +112,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.alpha_L             = 0.36                                # cobb-douglas for sector L
         par.alpha_N             = 0.27                                # cobb-douglas for sector N
         par.gamma_L             = 0.8                                 # substitution elasticity for sector L
-        par.gamma_N             = 0.9                                # substitution elasticity for sector N
+        par.gamma_N             = 0.9                                 # substitution elasticity for sector N
         par.mu_L                = 1.4                                 # mark-up for sector L
         par.mu_N                = 1.1                                 # mark-up for sector N
         par.kappa_L             = 0.1                                 # price rigidity for sector L
@@ -134,6 +134,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
     
         # g. indirect approach: targets for stationary equilibrium
         par.r_target_ss         = 0.005
+        par.ell_N_target        = 0.5
+        par.ell_L_target        = 0.5
 
         # h. misc.
         par.T                   = 500                                 # length of path                                    
@@ -153,5 +155,5 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         self.allocate_GE() # should always be called here
 
-    prepare_hh_ss = steady_state_copy.prepare_hh_ss
-    find_ss = steady_state_copy.find_ss
+    prepare_hh_ss = steady_state.prepare_hh_ss
+    find_ss = steady_state.find_ss
