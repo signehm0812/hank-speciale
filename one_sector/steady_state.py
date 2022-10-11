@@ -63,7 +63,8 @@ def evaluate_ss(model,do_print=False):
     ss.Z = 1.0
     ss.N = 1.0
     ss.pi = 0.0
-    ss.ell = par.ell_target
+    #ss.ell = par.ell_target
+    #ss.M = M_ss
     
     # b. targets
     ss.r = par.r_target_ss
@@ -89,6 +90,7 @@ def evaluate_ss(model,do_print=False):
 
     # g. market clearing
     ss.C = ss.Y-ss.G-ss.adjcost-ss.M*par.pm
+    ss.A_hh = np.sum(ss.a*ss.D)
 
 def objective_ss(x,model,do_print=False):
     """ objective function for finding steady state """
@@ -100,10 +102,10 @@ def objective_ss(x,model,do_print=False):
 
     evaluate_ss(model,do_print=do_print)
     
-    return np.array([ss.A_hh-ss.B]) #,ss.N_hh-ss.N
+    return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N]) #,ss.N_hh-ss.N
 
 
-def find_ss_direct(model,do_print=False,M_min=1.0,M_max=10.0,NK=10):
+def find_ss_direct(model,do_print=False,M_min=0.0,M_max=20.0,NK=20):
     
     t0 = time.time()
 
@@ -147,7 +149,7 @@ def find_ss(model,do_print=False):
 
     # a. find steady state
     t0 = time.time()
-    res = optimize.root(objective_ss,ss.M,method='hybr',tol=par.tol_ss,args=(model))
+    res = optimize.root(objective_ss,[ss.M],method='hybr',tol=par.tol_ss,args=(model))
 
     # final evaluation
     objective_ss(res.x,model)

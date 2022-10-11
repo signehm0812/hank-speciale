@@ -20,9 +20,9 @@ class HANKModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['r','tau','w','d','ell'] #['r','tau','w_L','w_N','d_L','d_N'] # direct inputs
+        self.inputs_hh = ['r','tau','w','d'] #['r','tau','w_L','w_N','d_L','d_N'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs (not used)
-        self.outputs_hh = ['a','c'] #['a','c','ell_N','ell_L','n_N','n_L'] # outputs
+        self.outputs_hh = ['a','c','ell','n'] #['a','c','ell_N','ell_L','n_N','n_L'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
   
         # c. GE
@@ -42,7 +42,6 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'G',
             'i',
             'N',
-            'ell',
             'M',
             'NKPC_res',
             'pi',
@@ -120,7 +119,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
     
         # g. indirect approach: targets for stationary equilibrium
         par.r_target_ss         = 0.005
-        par.ell_target          = 1.0
+        #par.ell                 = 1.0
 
         # h. misc.
         par.T                   = 500                                 # length of path                                    
@@ -141,4 +140,4 @@ class HANKModelClass(EconModelClass,GEModelClass):
         self.allocate_GE() # should always be called here
 
     prepare_hh_ss = steady_state.prepare_hh_ss
-    find_ss = steady_state.find_ss_direct
+    find_ss = steady_state.find_ss
