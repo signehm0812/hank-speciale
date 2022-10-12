@@ -8,6 +8,7 @@ def block_pre(par,ini,ss,path,ncols=1):
 
     for ncol in nb.prange(ncols):
 
+        #pM = path.pM[ncol,:]
         adjcost = path.adjcost[ncol,:]
         A_hh = path.A_hh[ncol,:]
         A = path.A[ncol,:]
@@ -22,7 +23,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         i = path.i[ncol,:]
         N_hh = path.N_hh[ncol,:]
         N = path.N[ncol,:]
-        M = path.M[ncol,:]
+        #M = path.M[ncol,:]
         NKPC_res = path.NKPC_res[ncol,:]
         pi = path.pi[ncol,:]
         r = path.r[ncol,:]
@@ -40,9 +41,10 @@ def block_pre(par,ini,ss,path,ncols=1):
         # a. firms
         mc[:] = ((1-par.alpha)*(w*Z)**(1-par.gamma)+par.alpha*par.pm**(1-par.gamma))**(1/(1-par.gamma))
         N[:] = (w/mc)**(-par.gamma)*(1-par.alpha)*Z**(1-par.gamma)*Y
-        M[:] = (par.pm/mc)**(-par.gamma)*par.alpha*Y
+        #M[:] = (par.pm/mc)**(-par.gamma)*par.alpha*Y
         adjcost[:] = par.mu/(par.mu-1)/(2*par.kappa)*np.log(1+pi)**2*Y
-        d[:] = Y-w*N-par.pm*M-adjcost
+        d[:] = Y-w*N-par.pm*par.M-adjcost
+        #pM[:] = 0.0005*Y
 
         # b. monetary policy
         i[:] = istar + par.phi*pi + par.phi_y*(Y-ss.Y)
@@ -63,6 +65,7 @@ def block_post(par,ini,ss,path,ncols=1):
 
     for ncol in nb.prange(ncols):
 
+        #pM = path.pM[ncol,:]
         adjcost = path.adjcost[ncol,:]
         A_hh = path.A_hh[ncol,:]
         A = path.A[ncol,:]
@@ -77,7 +80,7 @@ def block_post(par,ini,ss,path,ncols=1):
         i = path.i[ncol,:]
         N_hh = path.N_hh[ncol,:]
         N = path.N[ncol,:]
-        M = path.M[ncol,:]
+        #M = path.M[ncol,:]
         NKPC_res = path.NKPC_res[ncol,:]
         pi = path.pi[ncol,:]
         r = path.r[ncol,:]
@@ -88,6 +91,7 @@ def block_post(par,ini,ss,path,ncols=1):
         Y = path.Y[ncol,:]
         Z = path.Z[ncol,:]
 
+        
         #################
         # check targets #
         #################
@@ -98,10 +102,7 @@ def block_post(par,ini,ss,path,ncols=1):
         Y_plus = lead(Y,ss.Y)
 
         mc[:] = ((1-par.alpha)*(w*Z)**(1-par.gamma)+par.alpha*par.pm**(1-par.gamma))**(1/(1-par.gamma))
-        mc[:] = ((1-par.alpha)*(w*Z)**(1-par.gamma)+par.alpha*par.pm**(1-par.gamma))**(1/(1-par.gamma))
-        
         NKPC_res[:] = par.kappa*(mc-1/par.mu) + Y_plus/Y*np.log(1+pi_plus)/(1+r_plus) - np.log(1+pi)
-
 
         # b. market clearing
         clearing_A[:] = A-A_hh
