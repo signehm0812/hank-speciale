@@ -28,8 +28,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
-        self.shocks = ['istar','Z'] # exogenous inputs
-        self.unknowns = ['pi','w','Y'] # endogenous inputs
+        self.shocks = ['istar','Z','pm'] # exogenous inputs
+        self.unknowns = ['pi_L','pi_N','w_L','w_N','Y_L','Y_N'] # endogenous inputs
         self.targets = ['NKPC_res_N','NKPC_res_L','clearing_A','clearing_N'] # targets
         
         # d. all variables
@@ -40,12 +40,16 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'clearing_A',
             'clearing_C',
             'clearing_N',
-            #'d'
+            'd',
             'd_N',
             'd_L',
             'G',
             'i',
             'N',
+            'M',
+            'M_N',
+            'M_L',
+            'pm',
             #'NKPC_res',
             'NKPC_res_N',
             'NKPC_res_L',
@@ -80,7 +84,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         par.Nfix                = 1                                   # number of fixed discrete states (either work in L or N sector)
         par.Nz                  = 7                                   # number of stochastic discrete states (here productivity)
-        par.r_target_ss = 0.005
+        par.r_target_ss         = 0.005
 
         # a. preferences
         par.beta = 0.9875 # discount factor (guess, calibrated in ss)
@@ -103,10 +107,10 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.kappa_L             = 0.1                                 # price rigidity for sector L
         par.kappa_N             = 0.15                                 # price rigidity for sector N
         #par.Gamma_ss           = 1.0                                 # direct approach: technology level in steady state
-        par.pm                  = 1.5
-        par.M_N                 = 1.2
-        par.M_L                 = 0.8
-        par.M = par.M_L + par.M_N
+
+        #par.M_N                 = 1.2
+        #par.M_L                 = 0.8
+        #par.M = par.M_L + par.M_N
 
         #par.alpha               = 0.3
         #par.gamma               = 1.1                                 # Elasticity of substitution
@@ -128,15 +132,18 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.Na = 500 # number of grid points
 
         # g. shocks
-        par.jump_Z = 0.0 # initial jump
-        par.rho_Z = 0.00 # AR(1) coefficeint
-        par.std_Z = 0.00 # std.
-        par.jump_istar = -0.0025
-        par.rho_istar = 0.61
-        par.std_istar = 0.0025
+        par.jump_Z      = 0.0 # initial jump
+        par.rho_Z       = 0.00 # AR(1) coefficeint
+        par.std_Z       = 0.00 # std.
+        par.jump_istar  = -0.0025
+        par.rho_istar   = 0.61
+        par.std_istar   = 0.0025
+        par.jump_pm     = 0.25
+        par.rho_pm      = 0.7
+        par.std_pm      = 0.0025
 
         # h. misc.
-        par.T = 500 # length of path        
+        par.T = 1000 # length of path        
         
         par.max_iter_solve = 50_000 # maximum number of iterations when solving
         par.max_iter_simulate = 50_000 # maximum number of iterations when simulating
