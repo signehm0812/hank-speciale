@@ -46,6 +46,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'G',
             'i',
             'N',
+            'N_N',
+            'N_L',
             'M',
             'M_N',
             'M_L',

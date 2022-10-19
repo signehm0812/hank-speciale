@@ -44,8 +44,8 @@ def prepare_hh_ss(model):
 
         z = par.z_grid[i_z]
         T = (ss.d_N+ss.d_L)*z - ss.tau*z
-        n_N = 0.5*z
-        n_L = 0.5*z
+        n_N = 1.0*z
+        n_L = 1.0*z
 
         c = (1+ss.r)*par.a_grid + (ss.w_N*n_N+ss.w_L*n_L) + T
         va[0,i_z,:] = c**(-par.sigma)
@@ -60,8 +60,8 @@ def evaluate_ss(model,do_print=False):
 
     # a. fixed
     ss.Z = 1.0
-    ss.N_N = 0.5
-    ss.N_L = 0.5
+    ss.N_N = 1.0
+    ss.N_L = 1.0
     ss.pm = 1.5    
     ss.pi_N = 0.0
     ss.pi_L = 0.0
@@ -92,7 +92,7 @@ def evaluate_ss(model,do_print=False):
 
     ss.adjcost = ss.adjcost_N + ss.adjcost_L
     ss.Y = ss.Y_N + ss.Y_L
-    ss.N = ss.N_N + ss.N_L
+    #ss.N = ss.N_N + ss.N_L
     ss.M = ss.M_N + ss.M_L
     
     # e. government
@@ -102,7 +102,7 @@ def evaluate_ss(model,do_print=False):
     model.simulate_hh_ss(do_print=do_print)
 
     # g. market clearing
-    ss.C = ss.Y-ss.G-ss.adjcost-ss.pm*ss.M
+    ss.C  = ss.Y-ss.G-ss.adjcost-ss.pm*ss.M
 
 def objective_ss(x,model,do_print=False):
     """ objective function for finding steady state """
@@ -117,7 +117,7 @@ def objective_ss(x,model,do_print=False):
     evaluate_ss(model,do_print=do_print)
     
     #return np.array([ss.A_hh-ss.B])
-    return np.array([ss.A_hh-ss.B,ss.M_L-((par.alpha_L/par.alpha_N)*((ss.mc_L**par.gamma_N)/(ss.mc_N**par.gamma_N))*(ss.Y_L/ss.Y_N))*ss.M_N,ss.N_hh-ss.N])
+    return np.array([ss.A_hh-ss.B,ss.M_L-((par.alpha_L/par.alpha_N)*((ss.mc_L**par.gamma_N)/(ss.mc_N**par.gamma_N))*(ss.Y_L/ss.Y_N))*ss.M_N,ss.N_N_hh-ss.N_N,ss.N_L_hh-ss.N_L])
 
 def find_ss(model,do_print=False):
     """ find the steady state """

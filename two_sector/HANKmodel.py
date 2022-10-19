@@ -37,6 +37,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'A',
             'B',
             'C',
+            'C_N',
+            'C_L',
             'clearing_A',
             'clearing_C',
             'clearing_N',
@@ -46,6 +48,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'G',
             'i',
             'N',
+            'N_N',
+            'N_L',
             'M',
             'M_N',
             'M_L',
@@ -70,6 +74,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'Y',
             'Y_N',
             'Y_L',
+            'Q',
             'Z']
 
         # e. functions
