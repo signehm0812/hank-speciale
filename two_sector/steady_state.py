@@ -60,7 +60,7 @@ def evaluate_ss(model,do_print=False):
     # a. fixed
     #ss.Z = 1.0
     ss.N = 1.0
-    ss.pm = 1.0    
+    ss.pm = 0.8    
     ss.pi_N = 0.0
     ss.pi_L = 0.0
     ss.Y = 1.0

@@ -14,10 +14,16 @@ def block_pre(par,ini,ss,path,ncols=1):
         A_hh = path.A_hh[ncol,:]
         A = path.A[ncol,:]
         B = path.B[ncol,:]
-        C_hh = path.C_hh[ncol,:]
         C = path.C[ncol,:]
-        clearing_A = path.clearing_A[ncol,:]
+        C_hh = path.C_hh[ncol,:]
         clearing_C = path.clearing_C[ncol,:]
+        C_N = path.C_N[ncol,:]
+        C_N_hh = path.C_N_hh[ncol,:]
+        clearing_C_N = path.clearing_C_N[ncol,:]
+        C_L = path.C_L[ncol,:]                
+        C_L_hh = path.C_L_hh[ncol,:]
+        clearing_C_L = path.clearing_C_L[ncol,:]
+        clearing_A = path.clearing_A[ncol,:]
         clearing_N = path.clearing_N[ncol,:]
         d = path.d[ncol,:]
         d_N = path.d_N[ncol,:]
@@ -28,7 +34,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         N = path.N[ncol,:]
         N_N = path.N[ncol,:]                
         N_L = path.N[ncol,:]
-        M = path.M[ncol,:]
+        #M = path.M[ncol,:]
         M_N = path.M_N[ncol,:]                
         M_L = path.M_L[ncol,:]
         pm = path.pm[ncol,:]        
@@ -49,7 +55,8 @@ def block_pre(par,ini,ss,path,ncols=1):
         Y_N = path.Y_N[ncol,:]
         Y_L = path.Y_L[ncol,:]
         Y = path.Y[ncol,:]
-        Z = path.Z[ncol,:]
+        Z_N = path.Z_N[ncol,:]
+        Z_L = path.Z_L[ncol,:]
 
         #################
         # implied paths #
@@ -60,25 +67,25 @@ def block_pre(par,ini,ss,path,ncols=1):
         #N[:] = (w/mc)**(-par.gamma)*(1-par.alpha)*Z**(1-par.gamma)*Y
         #adjcost[:] = par.mu/(par.mu-1)/(2*par.kappa)*np.log(1+pi)**2*Y
         #d[:] = Y-w*N-par.pm*par.M-adjcost
-        mc_N[:] = ((1-par.alpha_N)*(w_N*Z)**(1-par.gamma_N)+par.alpha_N*pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
-        N_N[:] = (w_N/mc_N)**(-par.gamma_N)*(1-par.alpha_N)*Z**(1-par.gamma_N)*Y_N
+        mc_N[:] = ((1-par.alpha_N)*(w_N*Z_N)**(1-par.gamma_N)+par.alpha_N*pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
+        N_N[:] = (w_N/mc_N)**(-par.gamma_N)*(1-par.alpha_N)*Z_N**(1-par.gamma_N)*Y_N
         M_N[:] = par.alpha_N*(pm/mc_N)**(-par.gamma_N)*Y_N #Solved numerically later
         adjcost_N[:] = par.mu_N/(par.mu_N-1)/(2*par.kappa_N)*np.log(1+pi_N)**2*Y_N
         d_N[:] = Y_N-w_N*N_N-pm*M_N-adjcost_N
 
 
         # sector L
-        mc_L[:] = ((1-par.alpha_L)*(w_L*Z)**(1-par.gamma_L)+par.alpha_L*pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
-        N_L[:] = (w_L/mc_L)**(-par.gamma_L)*(1-par.alpha_L)*Z**(1-par.gamma_L)*Y_L
+        mc_L[:] = ((1-par.alpha_L)*(w_L*Z_L)**(1-par.gamma_L)+par.alpha_L*pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
+        N_L[:] = (w_L/mc_L)**(-par.gamma_L)*(1-par.alpha_L)*Z_L**(1-par.gamma_L)*Y_L
         M_L[:] = par.alpha_L*(pm/mc_L)**(-par.gamma_L)*Y_L #Solved numerically later
         adjcost_L[:] = par.mu_L/(par.mu_L-1)/(2*par.kappa_L)*np.log(1+pi_L)**2*Y_L
         d_L[:] = Y_L-w_L*N_L-pm*M_L-adjcost_L
 
-        Y[:] = Y_N+Y_L
-        N[:] = N_N+N_L
-        M[:] = M_L + M_N #Also not sure if this makes sense
-        d[:] = d_N + d_L
-        adjcost[:] = adjcost_N+adjcost_L
+        #Y[:] = Y_N+Y_L
+        #N[:] = N_N+N_L
+        #M[:] = M_L + M_N #Also not sure if this makes sense
+        #d[:] = d_N + d_L
+        #adjcost[:] = adjcost_N+adjcost_L
         #pi[:] = pi_L + pi_N #Fix this with weights etc. Doesn't make sense atm
         
         # b. monetary policy
@@ -93,7 +100,9 @@ def block_pre(par,ini,ss,path,ncols=1):
         
         # d. aggregates
         A[:] = B[:] = ss.B
-        C[:] = Y-G-adjcost-pm*M
+        C_N[:] = Y_N-adjcost_N-pm*(M_N)
+        C_L[:] = Y_L-adjcost_L-pm*(M_L)
+        #C[:] = Y-G-adjcost-pm*(M_N+M_L)
 
 @nb.njit
 def block_post(par,ini,ss,path,ncols=1):
@@ -106,10 +115,16 @@ def block_post(par,ini,ss,path,ncols=1):
         A_hh = path.A_hh[ncol,:]
         A = path.A[ncol,:]
         B = path.B[ncol,:]
-        C_hh = path.C_hh[ncol,:]
         C = path.C[ncol,:]
-        clearing_A = path.clearing_A[ncol,:]
+        C_hh = path.C_hh[ncol,:]
         clearing_C = path.clearing_C[ncol,:]
+        C_N = path.C_N[ncol,:]
+        C_N_hh = path.C_N_hh[ncol,:]
+        clearing_C_N = path.clearing_C_N[ncol,:]
+        C_L = path.C_L[ncol,:]       
+        C_L_hh = path.C_L_hh[ncol,:]
+        clearing_C_L = path.clearing_C_L[ncol,:]
+        clearing_A = path.clearing_A[ncol,:]
         clearing_N = path.clearing_N[ncol,:]
         d = path.d[ncol,:]
         d_N = path.d_N[ncol,:]
@@ -120,7 +135,7 @@ def block_post(par,ini,ss,path,ncols=1):
         N = path.N[ncol,:]
         M_N = path.M_N[ncol,:]                
         M_L = path.M_L[ncol,:]
-        M = path.M[ncol,:]
+        #M = path.M[ncol,:]
         pm = path.pm[ncol,:]        
         NKPC_res_N = path.NKPC_res_N[ncol,:]
         NKPC_res_L = path.NKPC_res_L[ncol,:]
@@ -139,7 +154,8 @@ def block_post(par,ini,ss,path,ncols=1):
         Y_N = path.Y_N[ncol,:]
         Y_L = path.Y_L[ncol,:]
         Y = path.Y[ncol,:]
-        Z = path.Z[ncol,:]
+        Z_N = path.Z_N[ncol,:]
+        Z_L = path.Z_L[ncol,:]
         
         #################
         # check targets #
@@ -152,13 +168,14 @@ def block_post(par,ini,ss,path,ncols=1):
         Y_N_plus = lead(Y_N,ss.Y_N)
         Y_L_plus = lead(Y_L,ss.Y_L)
 
-        mc_N[:] = ((1-par.alpha_N)*(w_N*Z)**(1-par.gamma_N)+par.alpha_N*pm**(1-par.gamma_N))**(1/(1-par.gamma_N)) #N/L here?
-        mc_L[:] = ((1-par.alpha_L)*(w_L*Z)**(1-par.gamma_L)+par.alpha_L*pm**(1-par.gamma_L))**(1/(1-par.gamma_L)) #N/L here?
+        mc_N[:] = ((1-par.alpha_N)*(w_N*Z_N)**(1-par.gamma_N)+par.alpha_N*pm**(1-par.gamma_N))**(1/(1-par.gamma_N)) #N/L here?
+        mc_L[:] = ((1-par.alpha_L)*(w_L*Z_L)**(1-par.gamma_L)+par.alpha_L*pm**(1-par.gamma_L))**(1/(1-par.gamma_L)) #N/L here?
         
         NKPC_res_N[:] = par.kappa_N*(mc_N-1/par.mu_N) + Y_N_plus/Y_N*np.log(1+pi_N_plus)/(1+r_plus) - np.log(1+pi_N)
         NKPC_res_L[:] = par.kappa_L*(mc_L-1/par.mu_L) + Y_L_plus/Y_L*np.log(1+pi_L_plus)/(1+r_plus) - np.log(1+pi_L)
 
         # b. market clearing
         clearing_A[:] = A-A_hh
-        clearing_C[:] = C-C_hh
+        clearing_C_N[:] = C_N-C_N_hh
+        clearing_C_L[:] = C_L-C_L_hh
         clearing_N[:] = N-N_hh
