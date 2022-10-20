@@ -22,13 +22,13 @@ class HANKModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['w_N','r','d_N','d_L','tau'] # direct inputs
+        self.inputs_hh = ['w_N','r','d_N','d_L','tau','Q'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
-        self.outputs_hh = ['a','c','ell','n'] # outputs
+        self.outputs_hh = ['a','c','c_N','c_L','ell','n'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
-        self.shocks = ['istar','Z','pm'] # exogenous inputs
+        self.shocks = ['istar','Z_N','Z_L','pm'] # exogenous inputs
         self.unknowns = ['pi_L','pi_N','w_L','w_N','Y_L','Y_N'] # endogenous inputs
         self.targets = ['NKPC_res_N','NKPC_res_L','clearing_A','clearing_N'] # targets
         
@@ -50,11 +50,9 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'N',
             'N_N',
             'N_L',
-            'M',
             'M_N',
             'M_L',
             'pm',
-            #'NKPC_res',
             'NKPC_res_N',
             'NKPC_res_L',
             'pi',
@@ -75,7 +73,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'Y_N',
             'Y_L',
             'Q',
-            'Z']
+            'Z_N',
+            'Z_L']
 
         # e. functions
         self.solve_hh_backwards = household_problem.solve_hh_backwards
@@ -94,6 +93,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
         # a. preferences
         par.beta = 0.9875 # discount factor (guess, calibrated in ss)
         par.varphi = 0.8 # disutility of labor (guess, calibrated in ss)
+        par.alpha_hh               = 0.8
+        par.gamma_hh               = 1.2                                 # Elasticity of substitution
 
         par.sigma = 2.0 # inverse of intertemporal elasticity of substitution
         par.nu = 2.0 # inverse Frisch elasticity
@@ -104,7 +105,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         # d. price setting
         par.alpha_L             = 0.3                                 # cobb-douglas for sector L
-        par.alpha_N             = 0.4                                 # cobb-douglas for sector N
+        par.alpha_N             = 0.5                                 # cobb-douglas for sector N
         par.gamma_L             = 1.1                                 # substitution elasticity for sector L
         par.gamma_N             = 1.2                                 # substitution elasticity for sector N
         par.mu_L                = 1.1                                 # mark-up for sector L
@@ -137,9 +138,12 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.Na = 500 # number of grid points
 
         # g. shocks
-        par.jump_Z      = 0.0 # initial jump
-        par.rho_Z       = 0.00 # AR(1) coefficeint
-        par.std_Z       = 0.00 # std.
+        par.jump_Z_N      = 0.0 # initial jump
+        par.rho_Z_N       = 0.00 # AR(1) coefficeint
+        par.std_Z_N       = 0.00 # std.
+        par.jump_Z_L      = 0.0 # initial jump
+        par.rho_Z_L       = 0.00 # AR(1) coefficeint
+        par.std_Z_L       = 0.00 # std.
         par.jump_istar  = -0.0025
         par.rho_istar   = 0.61
         par.std_istar   = 0.0025
