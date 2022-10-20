@@ -63,7 +63,7 @@ def evaluate_ss(model,do_print=False):
     ss.pm = 1.0    
     ss.pi_N = 0.0
     ss.pi_L = 0.0
-    ss.Y = 2.0
+    ss.Y = 1.0
     
     # b. targets
     ss.r = par.r_target_ss
@@ -85,7 +85,9 @@ def evaluate_ss(model,do_print=False):
 
     ss.Y_L = (1/ss.Q)*(ss.Y - ss.Y_N)
     ss.N_L = ss.N-ss.N_N
-    ss.M_L = (1/par.alpha_L)**(1/(par.gamma_L-1))*(ss.Y_L**((par.gamma_L-1)/par.gamma_L)-(1-par.alpha_L)**(1/par.gamma_L)*(ss.Z*ss.N_L)**((par.gamma_L-1)/par.gamma_L))**(par.gamma_L/(par.gamma_L-1))
+    ss.mc_L = ((1-par.alpha_L)*(ss.Z*ss.w_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
+    ss.M_L = par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L
+    #(1/par.alpha_L)**(1/(par.gamma_L-1))*(ss.Y_L**((par.gamma_L-1)/par.gamma_L)-(1-par.alpha_L)**(1/par.gamma_L)*(ss.Z*ss.N_L)**((par.gamma_L-1)/par.gamma_L))**(par.gamma_L/(par.gamma_L-1))
     
     ss.adjcost_L = 0.0
     ss.d_L = ss.Q*(ss.Y_L-ss.w_L*ss.N_L-ss.pm*ss.M_L-ss.adjcost_L)
@@ -95,18 +97,19 @@ def evaluate_ss(model,do_print=False):
     print('M_N =',ss.M_N, 'M_L =' ,ss.M_L, 'beta = ', par.beta, 'varphi =', par.varphi, 'N_N =', ss.N_N) #Print so we can see what goes wrong if root solving doesnt converge
     print('Q =',ss.Q, 'Y_L =' ,ss.Y_L, 'Y_N= ', ss.Y_N, 'w_N =', ss.w_N, 'N_L =', ss.N_L) #Print so we can see what goes wrong if root solving doesnt converge
 
-    ss.adjcost = ss.adjcost_N + ss.adjcost_L
+    #ss.adjcost = ss.adjcost_N + ss.adjcost_L
     
     # e. government
     ss.tau = ss.r*ss.B + ss.G
+
     # f. household 
     model.solve_hh_ss(do_print=do_print)
     model.simulate_hh_ss(do_print=do_print)
 
     # g. market clearing
-    ss.C_N = ss.Y_N-ss.adjcost_N-ss.pm*(ss.M_N)
-    ss.C_L = ss.Y_L-ss.adjcost_L-ss.pm*(ss.M_L)
-    ss.C = ss.C_N + ss.C_L
+    ss.C_N = ss.Y_N-ss.adjcost_N-ss.pm*ss.M_N
+    ss.C_L = ss.Y_L-ss.adjcost_L-ss.pm*ss.M_L
+    ss.C = ss.C_N + ss.Q*ss.C_L
 
 def objective_ss(x,model,do_print=False):
     """ objective function for finding steady state """
@@ -121,7 +124,7 @@ def objective_ss(x,model,do_print=False):
     evaluate_ss(model,do_print=do_print)
     
     #return np.array([ss.A_hh-ss.B])
-    return np.array([ss.A_hh-ss.B,ss.N_hh-(ss.N_N+ss.N_L), ss.C_hh - ss.C])
+    return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N,ss.C_hh-ss.C])
 
 def find_ss(model,do_print=False):
     """ find the steady state """
@@ -133,7 +136,7 @@ def find_ss(model,do_print=False):
     t0 = time.time()
 
     #Set initial values for ss.M_N and ss.M_L before looping over
-    ss.M_N = 0.5 
+    ss.M_N = 1.0 
     #ss.M_L = 1.0
     ss.N_N = 0.5
 

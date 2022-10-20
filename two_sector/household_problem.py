@@ -6,7 +6,7 @@ import numba as nb
 from consav.linear_interp import interp_1d_vec
 
 @nb.njit        
-def solve_hh_backwards(par,z_trans,w_N,w_L,r,d_N,d_L,tau,vbeg_a_plus,vbeg_a,a,c,ell,n):
+def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,vbeg_a_plus,vbeg_a,a,c,ell,n):
     """ solve backwards with vbeg_a_plus from previous iteration """
 
     for i_fix in range(par.Nfix):
@@ -17,7 +17,7 @@ def solve_hh_backwards(par,z_trans,w_N,w_L,r,d_N,d_L,tau,vbeg_a_plus,vbeg_a,a,c,
             # i. prepare
             z = par.z_grid[i_z]
             T = (d_L+d_N)*z - tau*z
-            fac = ((w_L+w_N)*z/par.varphi)**(1/par.nu)
+            fac = (w_N*z/par.varphi)**(1/par.nu)
 
             # ii. use focs
             c_endo = (par.beta*vbeg_a_plus[i_fix,i_z,:])**(-1/par.sigma)
@@ -25,7 +25,7 @@ def solve_hh_backwards(par,z_trans,w_N,w_L,r,d_N,d_L,tau,vbeg_a_plus,vbeg_a,a,c,
             n_endo = ell_endo*z
 
             # iii. re-interpolate
-            m_endo = c_endo + par.a_grid - (w_N+w_L)*n_endo - T
+            m_endo = c_endo + par.a_grid - w_N*n_endo - T
             m_exo = (1+r)*par.a_grid
 
             interp_1d_vec(m_endo,c_endo,m_exo,c[i_fix,i_z,:])
@@ -33,7 +33,7 @@ def solve_hh_backwards(par,z_trans,w_N,w_L,r,d_N,d_L,tau,vbeg_a_plus,vbeg_a,a,c,
             n[i_fix,i_z,:] = ell[i_fix,i_z,:]*z
 
             # iv. saving
-            a[i_fix,i_z,:] = m_exo + (w_N+w_L)*n[i_fix,i_z,:] + T - c[i_fix,i_z,:]
+            a[i_fix,i_z,:] = m_exo + w_N*n[i_fix,i_z,:] + T - c[i_fix,i_z,:]
 
             # v. refinement at constraint
             for i_a in range(par.Na):
@@ -47,13 +47,13 @@ def solve_hh_backwards(par,z_trans,w_N,w_L,r,d_N,d_L,tau,vbeg_a_plus,vbeg_a,a,c,
                     elli = ell[i_fix,i_z,i_a]
                     for i in range(30):
 
-                        ci = (1+r)*par.a_grid[i_a] + (w_N+w_L)*z*elli + T - par.a_min # from binding constraint
+                        ci = (1+r)*par.a_grid[i_a] + w_N*z*elli + T - par.a_min # from binding constraint
 
                         error = elli - fac*ci**(-par.sigma/par.nu)
                         if np.abs(error) < 1e-11:
                             break
                         else:
-                            derror = 1 - fac*(-par.sigma/par.nu)*ci**(-par.sigma/par.nu-1)*(w_N+w_L)*z
+                            derror = 1 - fac*(-par.sigma/par.nu)*ci**(-par.sigma/par.nu-1)*w_N*z
                             elli = elli - error/derror
                     else:
                         
