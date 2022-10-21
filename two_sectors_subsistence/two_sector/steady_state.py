@@ -114,7 +114,7 @@ def evaluate_ss(model,do_print=False):
     ss.C_L = ss.Y_L-ss.adjcost_L-ss.pm*ss.M_L
     
     ss.C = ss.C_N + ss.Q*ss.C_L
-    par.varphi = ((par.mu_N-par.alpha_N*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))*(((ss.C_hh**(par.sigma)*par.alpha_N*(ss.C_HAT_N_hh))**(-1/par.gamma_N)*ss.N_hh**(-par.nu))/ss.Z_N)
+    par.varphi = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))*(((ss.C_hh**(par.sigma)*par.alpha_N*ss.C_HAT_N_hh)**(-1/par.gamma_N)*ss.N_hh**(-par.nu))/ss.Z_N)
 
 def objective_ss(x,model,do_print=False):
     """ objective function for finding steady state """
