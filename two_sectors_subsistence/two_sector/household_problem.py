@@ -65,10 +65,10 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_
                     ell[i_fix,i_z,i_a] = elli
                     n[i_fix,i_z,i_a] = elli*z
 
-                    c_hat_N[i_fix,i_z,i_a] = par.alpha_hh*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*c[i_fix,i_z,i_a]
+                    c_hat_N[i_fix,i_z,i_a] = par.alpha_hh*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*ci
                     c_N[i_fix,i_z,i_a] = c_hat_N[i_fix,i_z,i_a] + par.c_bar
                     
-                    c_L[i_fix,i_z,i_a] = Q**(-par.gamma_hh)*(1-par.alpha_hh)*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*c[i_fix,i_z,i_a]
+                    c_L[i_fix,i_z,i_a] = Q**(-par.gamma_hh)*(1-par.alpha_hh)*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*ci
 
                     #c_hat_N[i_fix,i_z,i_a] = par.alpha_hh*((1-par.alpha_hh)*Q**(1-par.gamma_hh)+par.alpha_hh)**(par.gamma_hh/(1-par.gamma_hh))*ci - par.c_bar
                     #c_L[i_fix,i_z,i_a] = (1-par.alpha_hh)*((1-par.alpha_hh)*Q**(1-par.gamma_hh)+par.alpha_hh)**(par.gamma_hh/(1-par.gamma_hh))*Q**(-par.gamma_hh)*ci

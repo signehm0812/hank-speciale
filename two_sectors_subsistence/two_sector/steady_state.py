@@ -64,7 +64,7 @@ def evaluate_ss(model,do_print=False):
     ss.pi_N = 0.0
     ss.pi_L = 0.0
     ss.Y = 1.0
-    ss.Y_L = 0.5
+    ss.Z_L = 0.5
 
     # b. targets
     ss.r = par.r_target_ss
@@ -126,7 +126,7 @@ def objective_ss(x,model,do_print=False):
 
     #ss.M_L = x[0]
     #ss.N_L = x[1]
-    ss.Z_L = x[0]
+    ss.Y_L = x[0]
     par.beta = x[1]
     ss.Q = x[2]
 
@@ -145,12 +145,12 @@ def find_ss(model,do_print=False):
     t0 = time.time()
 
     #Set initial values for ss.Z_L and ss.Q before looping over
-    ss.Z_L = 0.8
+    ss.Y_L = 0.5
 #   ss.N_L = 0.5
-    ss.Q = 1.0
+    ss.Q = 0.5
 
     #res = optimize.root(objective_ss,[par.beta, par.varphi],method='hybr',tol=par.tol_ss,args=(model))
-    res = optimize.root(objective_ss,[ss.Z_L,par.beta,ss.Q],method='hybr',tol=par.tol_ss,args=(model))
+    res = optimize.root(objective_ss,[ss.Y_L,par.beta,ss.Q],method='hybr',tol=par.tol_ss,args=(model))
 
     # final evaluation
     objective_ss(res.x,model)
@@ -161,6 +161,8 @@ def find_ss(model,do_print=False):
         print(f'steady state found in {elapsed(t0)}')
         #print(f' M_N   = {res.x[0]:8.4f}')
         #print(f' beta   = {res.x[1]:8.4f}')
+        print(f' Z_N   = {ss.Z_N:8.4f}')
+        print(f' Z_L   = {ss.Z_L:8.4f}')        
         print(f' M_N   = {ss.M_N:8.4f}')
         print(f' M_L   = {ss.M_L:8.4f}')          
         print(f' HH_ell   = {ss.ELL_hh:8.4f}')  
@@ -170,6 +172,7 @@ def find_ss(model,do_print=False):
         print(f' par.beta   = {par.beta:8.4f}')                
         print('')
         print(f'Discrepancy in B = {ss.A-ss.A_hh:12.8f}')
+        print(f'Discrepancy in C = {ss.C-ss.C_hh:12.8f}')
         print(f'Discrepancy in C_L = {ss.C_L-ss.C_L_hh:12.8f}')
         print(f'Discrepancy in C_N = {ss.C_N-ss.C_N_hh:12.8f}')
         print(f'Discrepancy in N = {ss.N-ss.N_hh:12.8f}')
