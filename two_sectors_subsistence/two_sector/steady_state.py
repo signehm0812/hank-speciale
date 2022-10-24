@@ -75,7 +75,7 @@ def evaluate_ss(model,do_print=False):
     ss.i = ss.r = ss.istar = 0.0
 
     # d. firms   
-    ss.Z_L = (ss.Y_L**((par.gamma_L-1)/par.gamma_L)-par.alpha_L**(1/par.gamma_L)*ss.M_L**((par.gamma_L-1)/par.gamma_L))**(par.gamma_L/(par.gamma_L-1))*((1-par.alpha_L)**(1/(par.gamma_L-1))*ss.N_L)**(-1)
+    #ss.Z_L = (ss.Y_L**((par.gamma_L-1)/par.gamma_L)-par.alpha_L**(1/par.gamma_L)*ss.M_L**((par.gamma_L-1)/par.gamma_L))**(par.gamma_L/(par.gamma_L-1))*((1-par.alpha_L)**(1/(par.gamma_L-1))*ss.N_L)**(-1)
     ss.w_L = (1/ss.Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
     ss.w_N = ss.Q*ss.w_L
     ss.Z_N = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))*(ss.w_N**(-1))
@@ -83,6 +83,8 @@ def evaluate_ss(model,do_print=False):
     #ss.Y_N = (par.alpha_N**(1/par.gamma_N)*ss.M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)**(1/par.gamma_N)*(ss.Z*ss.N_N)**((par.gamma_N-1)/par.gamma_N))**(par.gamma_N/(par.gamma_N-1))
     ss.mc_N = ((1-par.alpha_N)*(ss.Z_N*ss.w_N)**(1-par.gamma_N)+par.alpha_N*ss.pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
     ss.mc_L = ((1-par.alpha_L)*(ss.Z_L*ss.w_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
+    ss.M_L = par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L    
+    ss.N_L = (1-par.alpha_L)*(ss.w_L/ss.mc_L)**(-par.gamma_L)*ss.Z_L**(-par.gamma_L)*ss.Y_L    
     ss.M_N = par.alpha_N*(ss.pm/ss.mc_N)**(-par.gamma_N)*ss.Y_N    
     ss.N_N = (1-par.alpha_N)*(ss.w_N/ss.mc_N)**(-par.gamma_N)*ss.Z_N**(-par.gamma_N)*ss.Y_N
     ss.adjcost_L = 0.0
@@ -114,7 +116,7 @@ def evaluate_ss(model,do_print=False):
     ss.C_L = ss.Y_L-ss.adjcost_L-ss.pm*ss.M_L
     
     ss.C = ss.C_N + ss.Q*ss.C_L
-    par.varphi = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))*(((ss.C_hh**(par.sigma)*par.alpha_N*ss.C_HAT_N_hh)**(-1/par.gamma_N)*ss.N_hh**(-par.nu))/ss.Z_N)
+    #par.varphi = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))*(((ss.C_hh**(par.sigma)*par.alpha_N*ss.C_HAT_N_hh)**(-1/par.gamma_N)*ss.ELL_hh**(-par.nu))/ss.Z_N)
 
 def objective_ss(x,model,do_print=False):
     """ objective function for finding steady state """
@@ -122,15 +124,16 @@ def objective_ss(x,model,do_print=False):
     par = model.par
     ss = model.ss
 
-    ss.M_L = x[0]
-    ss.N_L = x[1]
-    par.beta = x[2]
-    ss.Q = x[3]
+    #ss.M_L = x[0]
+    #ss.N_L = x[1]
+    ss.Z_L = x[0]
+    par.beta = x[1]
+    ss.Q = x[2]
 
     evaluate_ss(model,do_print=do_print)
     
     #return np.array([ss.A_hh-ss.B])
-    return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N,ss.C_N_hh-ss.C_N,ss.C_L_hh-ss.C_L])
+    return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N,ss.C_N_hh-ss.C_N])
 
 def find_ss(model,do_print=False):
     """ find the steady state """
@@ -141,13 +144,13 @@ def find_ss(model,do_print=False):
     # a. find steady state
     t0 = time.time()
 
-    #Set initial values for ss.M_N and ss.M_L before looping over
-    ss.M_L = 0.5
-    ss.N_L = 0.5
-    ss.Q = 0.5
+    #Set initial values for ss.Z_L and ss.Q before looping over
+    ss.Z_L = 0.8
+#   ss.N_L = 0.5
+    ss.Q = 1.0
 
     #res = optimize.root(objective_ss,[par.beta, par.varphi],method='hybr',tol=par.tol_ss,args=(model))
-    res = optimize.root(objective_ss,[ss.M_L,ss.N_L,par.beta,ss.Q],method='hybr',tol=par.tol_ss,args=(model))
+    res = optimize.root(objective_ss,[ss.Z_L,par.beta,ss.Q],method='hybr',tol=par.tol_ss,args=(model))
 
     # final evaluation
     objective_ss(res.x,model)
