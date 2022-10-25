@@ -96,7 +96,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.beta = 0.9875 # discount factor (guess, calibrated in ss)
         par.varphi = 0.8 # disutility of labor (guess, calibrated in ss)
         par.alpha_hh               = 0.5
-        par.gamma_hh               = 1.2                                 # Elasticity of substitution
+        par.gamma_hh               = 0.5                                 # Elasticity of substitution
         par.c_bar                  = 0.0
 
         par.sigma = 2.0 # inverse of intertemporal elasticity of substitution
@@ -107,14 +107,14 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.sigma_psi = np.sqrt(0.50**2*(1-par.rho_z**2)) # std. of psi
 
         # d. price setting
-        par.alpha_L             = 0.25                                 # cobb-douglas for sector L
+        par.alpha_L             = 0.5                                 # cobb-douglas for sector L
         par.alpha_N             = 0.5                                 # cobb-douglas for sector N
         par.gamma_L             = 1.1                                 # substitution elasticity for sector L
         par.gamma_N             = 1.1                                 # substitution elasticity for sector N
         par.mu_L                = 1.1                                 # mark-up for sector L
         par.mu_N                = 1.1                                 # mark-up for sector N
         par.kappa_L             = 0.1                                 # price rigidity for sector L
-        par.kappa_N             = 0.1                                 # price rigidity for sector N
+        par.kappa_N             = 0.12                                 # price rigidity for sector N
         #par.Gamma_ss           = 1.0                                 # direct approach: technology level in steady state
 
         #par.M_N                 = 1.2

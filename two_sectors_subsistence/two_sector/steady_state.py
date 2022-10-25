@@ -59,12 +59,12 @@ def evaluate_ss(model,do_print=False):
 
     # a. fixed
     #ss.Z = 1.0
-    ss.N = 1.0
-    ss.pm = 0.8    
+    #ss.N = 1.0
+    ss.pm = 1.0
     ss.pi_N = 0.0
     ss.pi_L = 0.0
     ss.Y = 1.0
-    ss.Z_L = 0.5
+    ss.Z_L = 1.0
 
     # b. targets
     ss.r = par.r_target_ss
@@ -86,11 +86,13 @@ def evaluate_ss(model,do_print=False):
     ss.M_L = par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L    
     ss.N_L = (1-par.alpha_L)*(ss.w_L/ss.mc_L)**(-par.gamma_L)*ss.Z_L**(-par.gamma_L)*ss.Y_L    
     ss.M_N = par.alpha_N*(ss.pm/ss.mc_N)**(-par.gamma_N)*ss.Y_N    
+    #ss.N_N = ss.N - ss.N_L
     ss.N_N = (1-par.alpha_N)*(ss.w_N/ss.mc_N)**(-par.gamma_N)*ss.Z_N**(-par.gamma_N)*ss.Y_N
     ss.adjcost_L = 0.0
     ss.adjcost_N = 0.0
     ss.d_N = ss.Y_N-ss.w_N*ss.N_N-ss.pm*ss.M_N-ss.adjcost_N
     ss.d_L = ss.Y_L-ss.w_L*ss.N_L-ss.pm*ss.M_L-ss.adjcost_L
+    ss.N = ss.N_N+ss.N_L
 
     #ss.mc_N = ((1-par.alpha_N)*(ss.w_N*ss.Z)**(1-par.gamma_N)+par.alpha_N*ss.pm**(1-par.gamma_N))**(1/(1-par.gamma_N))    
     #ss.Q = ss.w_N/ss.w_L
@@ -100,7 +102,7 @@ def evaluate_ss(model,do_print=False):
     #ss.mc_L = ((1-par.alpha_L)*(ss.w_L*ss.Z)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
     #ss.M_L = ((par.alpha_L/par.alpha_N)*((ss.mc_L**par.gamma_N)/(ss.mc_N**par.gamma_N))*(ss.Y_L/ss.Y_N))*ss.M_N
 
-    print('Q =', ss.Q, 'M_L =' ,ss.M_L, 'beta = ', par.beta, 'N_L =', ss.N_L) #Print so we can see what goes wrong if root solving doesnt converge
+    print('Z_N = ', ss.Z_N, 'Z_L = ', ss.Z_L, 'Q =', ss.Q, 'M_N =' ,ss.M_N, 'M_L =' ,ss.M_L, 'beta = ', par.beta, 'N_N =', ss.N_N,'N_L =', ss.N_L) #Print so we can see what goes wrong if root solving doesnt converge
     #print( 'Y_L =' ,ss.Y_L, 'Y_N= ', ss.Y_N, 'w_N =', ss.w_N, 'N_L =', ss.N_L) #Print so we can see what goes wrong if root solving doesnt converge
     #ss.adjcost = ss.adjcost_N + ss.adjcost_L
     
@@ -129,6 +131,18 @@ def objective_ss(x,model,do_print=False):
     ss.Y_L = x[0]
     par.beta = x[1]
     ss.Q = x[2]
+
+    if ss.Q <= 0: ss.Q = 0.1
+
+    if ss.Q > 5: ss.Q = 5.0
+
+    if ss.Y_L <= 0.1: ss.Y_L = 0.1
+
+    if ss.Y_L > 5: ss.Y_L = 5.0
+
+    if par.beta <=0.94: par.beta = 0.94
+
+    if par.beta > 1.0: par.beta = 1.0
 
     evaluate_ss(model,do_print=do_print)
     
@@ -175,4 +189,4 @@ def find_ss(model,do_print=False):
         print(f'Discrepancy in C = {ss.C-ss.C_hh:12.8f}')
         print(f'Discrepancy in C_L = {ss.C_L-ss.C_L_hh:12.8f}')
         print(f'Discrepancy in C_N = {ss.C_N-ss.C_N_hh:12.8f}')
-        print(f'Discrepancy in N = {ss.N-ss.N_hh:12.8f}')
+        print(f'Discrepancy in N = {ss.N_L+ss.N_N-ss.N_hh:12.8f}')
