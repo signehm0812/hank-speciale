@@ -16,7 +16,7 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_
 
             # i. prepare
             z = par.z_grid[i_z]
-            T = (d_N+Q*d_L)*z - tau*z
+            T = (d_N+d_L)*z - tau*z
             fac = (w_N*z/par.varphi)**(1/par.nu)
 
             # ii. use focs
@@ -62,13 +62,11 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_
                     # iii. save
 
                     c[i_fix,i_z,i_a] = ci
-                    ell[i_fix,i_z,i_a] = elli
-                    n[i_fix,i_z,i_a] = elli*z
-
                     c_hat_N[i_fix,i_z,i_a] = par.alpha_hh*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*ci
                     c_N[i_fix,i_z,i_a] = c_hat_N[i_fix,i_z,i_a] + par.c_bar
-                    
                     c_L[i_fix,i_z,i_a] = Q**(-par.gamma_hh)*(1-par.alpha_hh)*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*ci
+                    ell[i_fix,i_z,i_a] = elli
+                    n[i_fix,i_z,i_a] = elli*z
 
                     #c_hat_N[i_fix,i_z,i_a] = par.alpha_hh*((1-par.alpha_hh)*Q**(1-par.gamma_hh)+par.alpha_hh)**(par.gamma_hh/(1-par.gamma_hh))*ci - par.c_bar
                     #c_L[i_fix,i_z,i_a] = (1-par.alpha_hh)*((1-par.alpha_hh)*Q**(1-par.gamma_hh)+par.alpha_hh)**(par.gamma_hh/(1-par.gamma_hh))*Q**(-par.gamma_hh)*ci
@@ -77,6 +75,11 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_
                 else:
 
                     break
+
+
+        c_hat_N[i_fix,:,:] = par.alpha_hh*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*c[i_fix,:,:]
+        c_N[i_fix,:,:] = c_hat_N[i_fix,:,:] + par.c_bar
+        c_L[i_fix,:,:] = Q**(-par.gamma_hh)*(1-par.alpha_hh)*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*c[i_fix,:,:]
 
         # b. expectation step
         v_a = c[i_fix,:,:]**(-par.sigma)

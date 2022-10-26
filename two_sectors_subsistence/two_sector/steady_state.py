@@ -43,7 +43,7 @@ def prepare_hh_ss(model):
     for i_z in range(par.Nz):
 
         z = par.z_grid[i_z]
-        T = (ss.d_N+ss.Q*ss.d_L)*z - ss.tau*z
+        T = (ss.d_N+ss.d_L)*z - ss.tau*z
         n = 1.0*z
 
         c = (1+ss.r)*par.a_grid + ss.w_N*n + T
@@ -76,22 +76,23 @@ def evaluate_ss(model,do_print=False):
 
     # d. firms   
     #ss.Z_L = (ss.Y_L**((par.gamma_L-1)/par.gamma_L)-par.alpha_L**(1/par.gamma_L)*ss.M_L**((par.gamma_L-1)/par.gamma_L))**(par.gamma_L/(par.gamma_L-1))*((1-par.alpha_L)**(1/(par.gamma_L-1))*ss.N_L)**(-1)
-    ss.w_L = (1/ss.Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
+    ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
     ss.w_N = ss.Q*ss.w_L
-    ss.Z_N = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))*(ss.w_N**(-1))
-    ss.Y_N = 1-ss.Q*ss.Y_L
+    ss.Z_N = ss.w_N/((par.mu_N**(par.gamma_N-1)-par.alpha_L*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))
+    #ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
+    #ss.Z_N = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))*(ss.w_N**(-1))
+    ss.Y_N = ss.Y-ss.Q*ss.Y_L
     #ss.Y_N = (par.alpha_N**(1/par.gamma_N)*ss.M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)**(1/par.gamma_N)*(ss.Z*ss.N_N)**((par.gamma_N-1)/par.gamma_N))**(par.gamma_N/(par.gamma_N-1))
-    ss.mc_N = ((1-par.alpha_N)*(ss.Z_N*ss.w_N)**(1-par.gamma_N)+par.alpha_N*ss.pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
-    ss.mc_L = ((1-par.alpha_L)*(ss.Z_L*ss.w_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
+    ss.mc_N = ((1-par.alpha_N)*(ss.w_N/ss.Z_N)**(1-par.gamma_N)+par.alpha_N*ss.pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
+    ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
     ss.M_L = par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L    
-    ss.N_L = (1-par.alpha_L)*(ss.w_L/ss.mc_L)**(-par.gamma_L)*ss.Z_L**(-par.gamma_L)*ss.Y_L    
+    ss.N_L = (1-par.alpha_L)*(ss.w_L/ss.mc_L)**(-par.gamma_L)*ss.Z_L**(par.gamma_L-1)*ss.Y_L    
     ss.M_N = par.alpha_N*(ss.pm/ss.mc_N)**(-par.gamma_N)*ss.Y_N    
-    #ss.N_N = ss.N - ss.N_L
-    ss.N_N = (1-par.alpha_N)*(ss.w_N/ss.mc_N)**(-par.gamma_N)*ss.Z_N**(-par.gamma_N)*ss.Y_N
+    ss.N_N = (1-par.alpha_N)*(ss.w_N/ss.mc_N)**(-par.gamma_N)*ss.Z_N**(par.gamma_N-1)*ss.Y_N
     ss.adjcost_L = 0.0
     ss.adjcost_N = 0.0
     ss.d_N = ss.Y_N-ss.w_N*ss.N_N-ss.pm*ss.M_N-ss.adjcost_N
-    ss.d_L = ss.Y_L-ss.w_L*ss.N_L-ss.pm*ss.M_L-ss.adjcost_L
+    ss.d_L = ss.Q*(ss.Y_L-ss.w_L*ss.N_L-ss.pm*ss.M_L-ss.adjcost_L)
     ss.N = ss.N_N+ss.N_L
 
     #ss.mc_N = ((1-par.alpha_N)*(ss.w_N*ss.Z)**(1-par.gamma_N)+par.alpha_N*ss.pm**(1-par.gamma_N))**(1/(1-par.gamma_N))    
@@ -102,7 +103,7 @@ def evaluate_ss(model,do_print=False):
     #ss.mc_L = ((1-par.alpha_L)*(ss.w_L*ss.Z)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
     #ss.M_L = ((par.alpha_L/par.alpha_N)*((ss.mc_L**par.gamma_N)/(ss.mc_N**par.gamma_N))*(ss.Y_L/ss.Y_N))*ss.M_N
 
-    print('Z_N = ', ss.Z_N, 'Z_L = ', ss.Z_L, 'Q =', ss.Q, 'M_N =' ,ss.M_N, 'M_L =' ,ss.M_L, 'beta = ', par.beta, 'N_N =', ss.N_N,'N_L =', ss.N_L) #Print so we can see what goes wrong if root solving doesnt converge
+    print(f'Z_N \t={ss.Z_N:.4f}, Z_L = ', ss.Z_L, 'Q =', ss.Q, 'M_N =' ,ss.M_N, 'M_L =' ,ss.M_L, 'beta = ', par.beta, 'N_N =', ss.N_N,'N_L =', ss.N_L) #Print so we can see what goes wrong if root solving doesnt converge
     #print( 'Y_L =' ,ss.Y_L, 'Y_N= ', ss.Y_N, 'w_N =', ss.w_N, 'N_L =', ss.N_L) #Print so we can see what goes wrong if root solving doesnt converge
     #ss.adjcost = ss.adjcost_N + ss.adjcost_L
     
@@ -115,10 +116,11 @@ def evaluate_ss(model,do_print=False):
 
     # g. market clearing
     ss.C_N = ss.Y_N-ss.adjcost_N-ss.pm*ss.M_N
-    ss.C_L = ss.Y_L-ss.adjcost_L-ss.pm*ss.M_L
+    ss.C_L = ss.Q*(ss.Y_L-ss.adjcost_L-ss.pm*ss.M_L)
     
-    ss.C = ss.C_N + ss.Q*ss.C_L
-    #par.varphi = ((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))*(((ss.C_hh**(par.sigma)*par.alpha_N*ss.C_HAT_N_hh)**(-1/par.gamma_N)*ss.ELL_hh**(-par.nu))/ss.Z_N)
+    ss.C = ss.C_N + ss.C_L
+    
+    #ss.C = ss.Y_N-ss.adjcost_N-ss.pm*ss.M_N + ss.Q*(ss.Y_L-ss.adjcost_L-ss.pm*ss.M_L)
 
 def objective_ss(x,model,do_print=False):
     """ objective function for finding steady state """
@@ -131,6 +133,7 @@ def objective_ss(x,model,do_print=False):
     ss.Y_L = x[0]
     par.beta = x[1]
     ss.Q = x[2]
+    #par.varphi = x[3]
 
     if ss.Q <= 0: ss.Q = 0.1
 
@@ -144,10 +147,21 @@ def objective_ss(x,model,do_print=False):
 
     if par.beta > 1.0: par.beta = 1.0
 
+    #if par.varphi <=0.5: par.varphi = 0.5
+
+    #if par.varphi > 10.0: par.varphi = 10.0    
+
     evaluate_ss(model,do_print=do_print)
-    
+
+    #
+    #par.varphi = ss.w_N/(ss.ELL_hh**(-par.nu)*((ss.C**par.sigma)*ss.C_HAT_N_hh/par.alpha_hh)**(-1/par.gamma_hh))
+    #*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))*ss.Q*ss.Z_L
+        
+    #if par.varphi >= 5.0: par.varphi = 5.0
+
+
     #return np.array([ss.A_hh-ss.B])
-    return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N,ss.C_N_hh-ss.C_N])
+    return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N,ss.C_L_hh-ss.C_L])
 
 def find_ss(model,do_print=False):
     """ find the steady state """
@@ -165,6 +179,10 @@ def find_ss(model,do_print=False):
 
     #res = optimize.root(objective_ss,[par.beta, par.varphi],method='hybr',tol=par.tol_ss,args=(model))
     res = optimize.root(objective_ss,[ss.Y_L,par.beta,ss.Q],method='hybr',tol=par.tol_ss,args=(model))
+
+#    par.varphi = ss.ELL_hh**(-par.nu)*((ss.C**par.sigma)*ss.C_HAT_N_hh/par.alpha_hh)**(-1/par.gamma_hh)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))*ss.Q/ss.Z_L
+        
+#    if par.varphi >= 2.0: par.varphi = 2.0
 
     # final evaluation
     objective_ss(res.x,model)

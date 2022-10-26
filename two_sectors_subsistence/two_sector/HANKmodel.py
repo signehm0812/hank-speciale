@@ -29,8 +29,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         # c. GE
         self.shocks = ['istar','Z_N','Z_L','pm'] # exogenous inputs
-        self.unknowns = ['pi_L','pi_N','w_L','w_N','Y_L','Y_N'] # endogenous inputs
-        self.targets = ['NKPC_res_N','NKPC_res_L','clearing_A','clearing_N','clearing_C_N','clearing_C_L'] # targets
+        self.unknowns = ['pi_N','Q','w_N','N_L','N_N'] # endogenous inputs
+        self.targets = ['NKPC_res_N','NKPC_res_L','clearing_A','clearing_N','clearing_C_N'] # targets
         
         # d. all variables
         self.varlist = [ # all variables
@@ -108,13 +108,13 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         # d. price setting
         par.alpha_L             = 0.5                                 # cobb-douglas for sector L
-        par.alpha_N             = 0.5                                 # cobb-douglas for sector N
-        par.gamma_L             = 1.1                                 # substitution elasticity for sector L
-        par.gamma_N             = 1.1                                 # substitution elasticity for sector N
-        par.mu_L                = 1.1                                 # mark-up for sector L
+        par.alpha_N             = 0.25                                 # cobb-douglas for sector N
+        par.gamma_L             = 0.5                                 # substitution elasticity for sector L
+        par.gamma_N             = 0.5                                 # substitution elasticity for sector N
+        par.mu_L                = 1.15                                 # mark-up for sector L
         par.mu_N                = 1.1                                 # mark-up for sector N
         par.kappa_L             = 0.1                                 # price rigidity for sector L
-        par.kappa_N             = 0.12                                 # price rigidity for sector N
+        par.kappa_N             = 0.15                                 # price rigidity for sector N
         #par.Gamma_ss           = 1.0                                 # direct approach: technology level in steady state
 
         #par.M_N                 = 1.2
