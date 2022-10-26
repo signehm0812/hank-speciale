@@ -108,12 +108,12 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         # d. price setting
         par.alpha_L             = 0.5                                 # cobb-douglas for sector L
-        par.alpha_N             = 0.25                                 # cobb-douglas for sector N
+        par.alpha_N             = 0.5                                 # cobb-douglas for sector N
         par.gamma_L             = 0.5                                 # substitution elasticity for sector L
         par.gamma_N             = 0.5                                 # substitution elasticity for sector N
         par.mu_L                = 1.15                                 # mark-up for sector L
-        par.mu_N                = 1.1                                 # mark-up for sector N
-        par.kappa_L             = 0.1                                 # price rigidity for sector L
+        par.mu_N                = 1.15                                 # mark-up for sector N
+        par.kappa_L             = 0.15                                 # price rigidity for sector L
         par.kappa_N             = 0.15                                 # price rigidity for sector N
         #par.Gamma_ss           = 1.0                                 # direct approach: technology level in steady state
 
