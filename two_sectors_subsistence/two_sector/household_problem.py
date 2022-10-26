@@ -6,7 +6,7 @@ import numba as nb
 from consav.linear_interp import interp_1d_vec
 
 @nb.njit        
-def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_hat_N,c_N,c_L,ell,n):
+def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,P,vbeg_a_plus,vbeg_a,a,c,c_hat_N,c_N,c_L,ell,n):
     """ solve backwards with vbeg_a_plus from previous iteration """
 
     for i_fix in range(par.Nfix):
@@ -16,7 +16,7 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_
 
             # i. prepare
             z = par.z_grid[i_z]
-            T = (d_N+Q*d_L)*z - (par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh))*tau*z
+            T = (d_N+Q*d_L)*z - P*tau*z
             fac = (w_N*z/par.varphi)**(1/par.nu)
 
             # ii. use focs
@@ -25,7 +25,7 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_
             n_endo = ell_endo*z
 
             # iii. re-interpolate
-            m_endo = c_endo + par.a_grid - w_N*n_endo/((par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh))) - T/((par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)))
+            m_endo = c_endo + par.a_grid - w_N*n_endo/(P) - T/(P)
             m_exo = (1+r)*par.a_grid
 
             interp_1d_vec(m_endo,c_endo,m_exo,c[i_fix,i_z,:])
@@ -33,7 +33,7 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_
             n[i_fix,i_z,:] = ell[i_fix,i_z,:]*z
 
             # iv. saving
-            a[i_fix,i_z,:] = m_exo + w_N*n[i_fix,i_z,:]/((par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh))) + T/((par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh))) - c[i_fix,i_z,:]
+            a[i_fix,i_z,:] = m_exo + w_N*n[i_fix,i_z,:]/(P) + T/(P) - c[i_fix,i_z,:]
 
             # v. refinement at constraint
             for i_a in range(par.Na):
@@ -47,13 +47,13 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_
                     elli = ell[i_fix,i_z,i_a]
                     for i in range(30):
 
-                        ci = (1+r)*par.a_grid[i_a] + w_N*z*elli/((par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh))) + T/((par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh))) - par.a_min # from binding constraint
+                        ci = (1+r)*par.a_grid[i_a] + w_N*z*elli/(P) + T/(P) - par.a_min # from binding constraint
 
                         error = elli - fac*ci**(-par.sigma/par.nu)
                         if np.abs(error) < 1e-11:
                             break
                         else:
-                            derror = 1 - fac*(-par.sigma/par.nu)*ci**(-par.sigma/par.nu-1)*((par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)))*w_N*z
+                            derror = 1 - fac*(-par.sigma/par.nu)*ci**(-par.sigma/par.nu-1)*(P)*w_N*z
                             elli = elli - error/derror
                     else:
                         
@@ -76,10 +76,10 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,vbeg_a_plus,vbeg_a,a,c,c_
 
                     break
 
-
-        c_hat_N[i_fix,:,:] = par.alpha_hh*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*c[i_fix,:,:]
+        #c_hat[i_fix,:,:] = c[i_fix,:,:] - par.c_bar/(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh))
+        c_hat_N[i_fix,:,:] = par.alpha_hh*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*(c[i_fix,:,:] - par.c_bar/P)
         c_N[i_fix,:,:] = c_hat_N[i_fix,:,:] + par.c_bar
-        c_L[i_fix,:,:] = Q**(-par.gamma_hh)*(1-par.alpha_hh)*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*c[i_fix,:,:]
+        c_L[i_fix,:,:] = Q**(-par.gamma_hh)*(1-par.alpha_hh)*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*(c[i_fix,:,:] - par.c_bar/P)
 
         # b. expectation step
         v_a = c[i_fix,:,:]**(-par.sigma)

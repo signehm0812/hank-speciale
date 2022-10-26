@@ -22,7 +22,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['w_N','r','d_N','d_L','tau','Q'] # direct inputs
+        self.inputs_hh = ['w_N','r','d_N','d_L','tau','Q','P'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
         self.outputs_hh = ['a','c','c_hat_N','c_N','c_L','ell','n'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
@@ -75,6 +75,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'Y_N',
             'Y_L',
             'Q',
+            'P',
             'Z_N',
             'Z_L']
 
@@ -97,7 +98,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.varphi = 0.8 # disutility of labor (guess, calibrated in ss)
         par.alpha_hh               = 0.5
         par.gamma_hh               = 0.5                                 # Elasticity of substitution
-        par.c_bar                  = 0.0
+        par.c_bar                  = 0.1
 
         par.sigma = 2.0 # inverse of intertemporal elasticity of substitution
         par.nu = 2.0 # inverse Frisch elasticity

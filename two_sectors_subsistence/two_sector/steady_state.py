@@ -75,11 +75,11 @@ def evaluate_ss(model,do_print=False):
     ss.i = ss.r = ss.istar = 0.0
 
     # d. firms  
-    P = (par.alpha_hh+ss.Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
+    ss.P = (par.alpha_hh+ss.Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
     ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
     ss.w_N = ss.Q*ss.w_L
     ss.Z_N = ss.w_N/((par.mu_N**(par.gamma_N-1)-par.alpha_L*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))
-    ss.Y_N = ss.Y*P-ss.Q*ss.Y_L
+    ss.Y_N = ss.Y*ss.P-ss.Q*ss.Y_L
     ss.mc_N = ((1-par.alpha_N)*(ss.w_N/ss.Z_N)**(1-par.gamma_N)+par.alpha_N*ss.pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
     ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
     ss.M_L = (par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L)#/ss.Q    
@@ -105,7 +105,7 @@ def evaluate_ss(model,do_print=False):
     ss.C_N = ss.Y_N-ss.adjcost_N-ss.pm*ss.M_N
     ss.C_L = ss.Y_L-ss.adjcost_L-ss.pm*ss.M_L
     
-    ss.C = (ss.C_N + ss.Q*ss.C_L)/P
+    ss.C = (ss.C_N + ss.Q*ss.C_L)/ss.P
     
     #ss.C = ss.Y_N-ss.adjcost_N-ss.pm*ss.M_N + ss.Q*(ss.Y_L-ss.adjcost_L-ss.pm*ss.M_L)
 
