@@ -82,6 +82,7 @@ def evaluate_ss(model,do_print=False):
     #ss.Z_N = ss.w_N/((par.mu_N**(par.gamma_N-1)-par.alpha_L*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))
     ss.Y_N = ss.Y*ss.P-ss.Q*ss.Y_L
     ss.mc_N = ((1-par.alpha_N)*(ss.w_N/ss.Z_N)**(1-par.gamma_N)+par.alpha_N*ss.pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
+    #ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
     ss.mc_L = ss.Q**(par.gamma_L/(1-par.gamma_L))*((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L)*ss.Q**(par.gamma_L-1))**(1/(1-par.gamma_L))
     ss.M_L = par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L*ss.Q**(par.gamma_L)
     #ss.M_L = (par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L)
