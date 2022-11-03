@@ -58,7 +58,7 @@ def evaluate_ss(model,do_print=False):
     ss = model.ss
 
     # a. fixed
-    ss.pm = 1.1
+    ss.pm_L = 1.1
     ss.pi_N = 0.0
     ss.pi_L = 0.0
     ss.Y = 1.0
