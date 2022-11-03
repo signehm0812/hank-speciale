@@ -76,25 +76,25 @@ def evaluate_ss(model,do_print=False):
     # d. firms  
     ss.P = (par.alpha_hh+ss.Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
     #ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)*ss.Q**(par.gamma_L*(1-par.gamma_L)-1)-par.alpha_L*ss.pm**(1-par.gamma_L)*ss.Q**(par.gamma_L-1))/(1-par.alpha_L))**(1/(1-par.gamma_L))
-    ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
+    ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm_L**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
     ss.w_N = ss.Q*ss.w_L
-    #ss.pm_N = ss.Q*ss.pm
-    ss.Z_N = ss.w_N*((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(-1/(1-par.gamma_N))
+    ss.pm_N = ss.Q*ss.pm_L
+    ss.Z_N = ss.w_N*((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm_N**(1-par.gamma_N))/(1-par.alpha_N))**(-1/(1-par.gamma_N))
     #ss.Z_N = ss.w_N/((par.mu_N**(par.gamma_N-1)-par.alpha_L*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))
     ss.Y_N = ss.Y*ss.P-ss.Q*ss.Y_L
-    ss.mc_N = ((1-par.alpha_N)*(ss.w_N/ss.Z_N)**(1-par.gamma_N)+par.alpha_N*ss.pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
+    ss.mc_N = ((1-par.alpha_N)*(ss.w_N/ss.Z_N)**(1-par.gamma_N)+par.alpha_N*ss.pm_N**(1-par.gamma_N))**(1/(1-par.gamma_N))
     #ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
-    ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
+    ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm_L**(1-par.gamma_L))**(1/(1-par.gamma_L))
     #ss.mc_L = ss.Q**(par.gamma_L/(1-par.gamma_L))*((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L)*ss.Q**(par.gamma_L-1))**(1/(1-par.gamma_L))
     #ss.M_L = par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L*ss.Q**(par.gamma_L)
-    ss.M_L = par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L
+    ss.M_L = par.alpha_L*(ss.pm_L/ss.mc_L)**(-par.gamma_L)*ss.Y_L
     ss.N_L = (1-par.alpha_L)*(ss.w_L/ss.mc_L)**(-par.gamma_L)*ss.Z_L**(par.gamma_L-1)*ss.Y_L    
-    ss.M_N = par.alpha_N*(ss.pm/ss.mc_N)**(-par.gamma_N)*ss.Y_N    
+    ss.M_N = par.alpha_N*(ss.pm_N/ss.mc_N)**(-par.gamma_N)*ss.Y_N    
     ss.N_N = (1-par.alpha_N)*(ss.w_N/ss.mc_N)**(-par.gamma_N)*ss.Z_N**(par.gamma_N-1)*ss.Y_N
     ss.adjcost_L = 0.0
     ss.adjcost_N = 0.0
-    ss.d_N = ss.Y_N-ss.w_N*ss.N_N-ss.pm*ss.M_N-ss.adjcost_N
-    ss.d_L = ss.Y_L-ss.w_L*ss.N_L-ss.pm*ss.M_L-ss.adjcost_L
+    ss.d_N = ss.Y_N-ss.w_N*ss.N_N-ss.pm_N*ss.M_N-ss.adjcost_N
+    ss.d_L = ss.Y_L-ss.w_L*ss.N_L-ss.pm_L*ss.M_L-ss.adjcost_L
     ss.N = ss.N_N+ss.N_L
 
     print(f'Z_N = {ss.Z_N:.4f},\t Z_L = {ss.Z_L:.4f},\t Q = {ss.Q:.4f},\t M_N = {ss.M_N:.4f},\t M_L = {ss.M_L:.4f},\t beta = {par.beta:.4f},\t N_N = {ss.N_N:.4f},\t N_L = {ss.N_L:.4f}') #Print so we can see what goes wrong if root solving doesnt converge
@@ -109,8 +109,8 @@ def evaluate_ss(model,do_print=False):
 
 
     # g. market clearing
-    ss.C_N = ss.Y_N-ss.adjcost_N-ss.pm*ss.M_N
-    ss.C_L = ss.Y_L-ss.adjcost_L-ss.pm*ss.M_L
+    ss.C_N = ss.Y_N-ss.adjcost_N-ss.pm_N*ss.M_N
+    ss.C_L = ss.Y_L-ss.adjcost_L-ss.pm_L*ss.M_L
     
     ss.C = (ss.C_N + ss.Q*ss.C_L)/ss.P
 

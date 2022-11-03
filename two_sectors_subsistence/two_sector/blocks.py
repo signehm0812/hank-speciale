@@ -37,7 +37,8 @@ def block_pre(par,ini,ss,path,ncols=1):
         #M = path.M[ncol,:]
         M_N = path.M_N[ncol,:]                
         M_L = path.M_L[ncol,:]
-        pm = path.pm[ncol,:]        
+        pm_L = path.pm_L[ncol,:]        
+        pm_N = path.pm_N[ncol,:]        
         NKPC_res_N = path.NKPC_res_N[ncol,:]
         NKPC_res_L = path.NKPC_res_L[ncol,:]
         #NKPC_res = path.NKPC_res[ncol,:]
@@ -45,6 +46,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         pi_N = path.pi_N[ncol,:]
         pi_L = path.pi_L[ncol,:]
         r = path.r[ncol,:]
+        rstar = path.rstar[ncol,:]
         istar = path.istar[ncol,:]
         tau = path.tau[ncol,:]
         w_N = path.w_N[ncol,:]
@@ -65,17 +67,26 @@ def block_pre(par,ini,ss,path,ncols=1):
         #################
 
         # a. firms
+        
+        
         P[:] = (par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
-        w_L[:] = (Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
-        w_N[:] = Q*w_L
-        Z_N[:] = w_N/((par.mu_N**(par.gamma_N-1)-par.alpha_L*pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))
-        Y_N[:] = Y*P-Q*Y_L
-        mc_N[:] = ((1-par.alpha_N)*(w_N/Z_N)**(1-par.gamma_N)+par.alpha_N*pm**(1-par.gamma_N))**(1/(1-par.gamma_N))
-        mc_L[:] = ((1-par.alpha_L)*(w_L/Z_L)**(1-par.gamma_L)+par.alpha_L*pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
-        M_L[:] = (par.alpha_L*(pm/mc_L)**(-par.gamma_L)*Y_L)    
-        N_L[:] = (1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1)*Y_L    
-        M_N[:] = par.alpha_N*(pm/mc_N)**(-par.gamma_N)*Y_N    
-        N_N[:] = (1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1)*Y_N
+
+        
+        
+        
+        #w_L[:] = (Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
+        #w_N[:] = Q*w_L
+        #pm_N[:] = Q*pm
+        #Z_N[:] = w_N*((par.mu_N**(par.gamma_N-1)-par.alpha_N*pm_N**(1-par.gamma_N))/(1-par.alpha_N))**(-1/(1-par.gamma_N))
+        #Y_N[:] = Y*P-Q*Y_L
+        #mc_N[:] = ((1-par.alpha_N)*(w_N/Z_N)**(1-par.gamma_N)+par.alpha_N*pm_N**(1-par.gamma_N))**(1/(1-par.gamma_N))
+        #mc_L[:] = ((1-par.alpha_L)*(w_L/Z_L)**(1-par.gamma_L)+par.alpha_L*pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
+        #
+        #M_L[:] = (par.alpha_L*(pm/mc_L)**(-par.gamma_L)*Y_L)    
+        #N_L[:] = (1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1)*Y_L    
+        #
+        #M_N[:] = par.alpha_N*(pm_N/mc_N)**(-par.gamma_N)*Y_N    
+        #N_N[:] = (1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1)*Y_N
 
         '''
         # sector N
@@ -93,10 +104,31 @@ def block_pre(par,ini,ss,path,ncols=1):
         adjcost_L[:] = par.mu_L/(par.mu_L-1)/(2*par.kappa_L)*np.log(1+pi_L)**2*Y_L
         d_L[:] = Y_L-w_L*N_L-pm*M_L-adjcost_L
         '''
-
+        # inflation
+        Q_lag = lag(ini.Q,Q)
+        pi_L[:] = (Q/Q_lag)*(1+pi_N)-1
         pi[:] = pi_N**par.epsilon*pi_L**(1-par.epsilon) #preliminary inflation indexing
         
+        # prices
+        w_L[:] = (1/Q)*w_N
+        pm_L[:] = (1/Q)*pm_N
+
+        # production
+        mc_N[:] = ((1-par.alpha_N)*(w_N/Z_N)**(1-par.gamma_N)+par.alpha_N*pm_N**(1-par.gamma_N))**(1/(1-par.gamma_N))
+        mc_L[:] = ((1-par.alpha_L)*(w_L/Z_L)**(1-par.gamma_L)+par.alpha_L*pm_L**(1-par.gamma_L))**(1/(1-par.gamma_L))
+
+        adjcost_N[:] = (par.mu_N/(par.mu_N-1))*(1/(2*par.kappa_N))*(np.log(1+pi_N))**2
+        adjcost_L[:] = (par.mu_L/(par.mu_L-1))*(1/(2*par.kappa_L))*(np.log(1+pi_L))**2
+
+        M_N[:] = (1-par.alpha_N)**(1/(par.gamma_N))*(Z_N*N_N)*(par.alpha_N**((1-par.gamma_N)/par.gamma_N)*(pm_N/mc_N)**(par.gamma_N-1)-par.alpha_N**(1/par.gamma_N))**(par.gamma_N/(1-par.gamma_N))
+        M_L[:] = (1-par.alpha_L)**(1/(par.gamma_L))*(Z_L*N_L)*(par.alpha_L**((1-par.gamma_L)/par.gamma_L)*(pm_L/mc_L)**(par.gamma_L-1)-par.alpha_L**(1/par.gamma_L))**(par.gamma_L/(1-par.gamma_L))
+
+        Y_N[:] = (par.alpha_N**(1/par.gamma_N)*M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)*(1/par.gamma_N)*(Z_N*N_N)**((par.gamma_N-1)/(par.gamma_N)))**(par.gamma_N/(par.gamma_N-1))
+        Y_L[:] = (par.alpha_L**(1/par.gamma_L)*M_L**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)*(1/par.gamma_L)*(Z_L*N_L)**((par.gamma_L-1)/(par.gamma_L)))**(par.gamma_L/(par.gamma_L-1))
+        
         # b. monetary policy
+        rstar[:] = ss.r
+        istar[:] = pi + rstar
         i[:] = istar + par.phi*pi + par.phi_y*(Y-(ss.Y_N+Q*ss.Y_L))
         i_lag = lag(ini.i,i)
         r[:] = (1+i_lag)/(1+pi)-1 ## Fix these taylor rule weights 
@@ -108,9 +140,10 @@ def block_pre(par,ini,ss,path,ncols=1):
         
         # d. aggregates
         A[:] = B[:] = ss.B
-        C_N[:] = Y_N-adjcost_N-pm*M_N
-        C_L[:] = Y_L-adjcost_L-pm*M_L
+        C_N[:] = Y_N-adjcost_N-pm_N*M_N
+        #C_L[:] = Y_L-adjcost_L-pm*M_L
         C[:] = (C_N + Q*C_L)/P
+        N[:] = N_N + N_L
 
 @nb.njit
 def block_post(par,ini,ss,path,ncols=1):
@@ -145,6 +178,7 @@ def block_post(par,ini,ss,path,ncols=1):
         M_L = path.M_L[ncol,:]
         #M = path.M[ncol,:]
         pm = path.pm[ncol,:]        
+        pm_N = path.pm_N[ncol,:]        
         NKPC_res_N = path.NKPC_res_N[ncol,:]
         NKPC_res_L = path.NKPC_res_L[ncol,:]
         #NKPC_res = path.NKPC_res[ncol,:]
@@ -164,7 +198,9 @@ def block_post(par,ini,ss,path,ncols=1):
         Y = path.Y[ncol,:]
         Z_N = path.Z_N[ncol,:]
         Z_L = path.Z_L[ncol,:]
-        
+        Q = path.Q[ncol,:]
+        P = path.P[ncol,:]
+
         #################
         # check targets #
         #################
@@ -175,8 +211,11 @@ def block_post(par,ini,ss,path,ncols=1):
         pi_L_plus = lead(pi_L,ss.pi_L)
         Y_N_plus = lead(Y_N,ss.Y_N)
         Y_L_plus = lead(Y_L,ss.Y_L)
+        Q_lag = lag(ini.Q,Q)
+        pi_L[:] = Q/Q_lag*pi_N
 
-        mc_N[:] = ((1-par.alpha_N)*(w_N/Z_N)**(1-par.gamma_N)+par.alpha_N*pm**(1-par.gamma_N))**(1/(1-par.gamma_N)) 
+
+        mc_N[:] = ((1-par.alpha_N)*(w_N/Z_N)**(1-par.gamma_N)+par.alpha_N*pm_N**(1-par.gamma_N))**(1/(1-par.gamma_N)) 
         mc_L[:] = ((1-par.alpha_L)*(w_L*Z_L)**(1-par.gamma_L)+par.alpha_L*pm**(1-par.gamma_L))**(1/(1-par.gamma_L)) 
         
         NKPC_res_N[:] = par.kappa_N*(mc_N-1/par.mu_N) + Y_N_plus/Y_N*np.log(1+pi_N_plus)/(1+r_plus) - np.log(1+pi_N)
