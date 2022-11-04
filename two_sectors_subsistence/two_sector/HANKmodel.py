@@ -29,7 +29,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         # c. GE
         self.shocks = ['rstar','Z_N','Z_L','pm_N'] # exogenous inputs
-        self.unknowns = ['pi_N','Q','w_N','N_L','N_N'] # endogenous inputs
+        self.unknowns = ['pi_N','Q','w_N','Y_L','Y_N'] # endogenous inputs
         self.targets = ['NKPC_res_N','NKPC_res_L','clearing_A','clearing_N','clearing_C_N'] # targets
         
         # d. all variables

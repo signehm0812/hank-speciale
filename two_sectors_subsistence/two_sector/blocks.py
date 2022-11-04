@@ -84,8 +84,11 @@ def block_pre(par,ini,ss,path,ncols=1):
         adjcost_N[:] = (par.mu_N/(par.mu_N-1))*(1/(2*par.kappa_N))*(np.log(1+pi_N))**2 # adjustment cost sector N
         adjcost_L[:] = (par.mu_L/(par.mu_L-1))*(1/(2*par.kappa_L))*(np.log(1+pi_L))**2 # adjustment cost sector L
 
-        M_N[:] = (1-par.alpha_N)**(1/(par.gamma_N))*(Z_N*N_N)*(par.alpha_N**((1-par.gamma_N)/par.gamma_N)*(pm_N/mc_N)**(par.gamma_N-1)-par.alpha_N**(1/par.gamma_N))**(par.gamma_N/(1-par.gamma_N)) # M_N backed out from equating Y_N and M_N demand
-        M_L[:] = (1-par.alpha_L)**(1/(par.gamma_L))*(Z_L*N_L)*(par.alpha_L**((1-par.gamma_L)/par.gamma_L)*(pm_L/mc_L)**(par.gamma_L-1)-par.alpha_L**(1/par.gamma_L))**(par.gamma_L/(1-par.gamma_L)) # M_L backed out from equating Y_L and M_L demand
+        M_N[:] = par.alpha_N*(pm_N/mc_N)**(-par.gamma_N)*Y_N # M_N backed out from equating Y_N and M_N demand
+        M_L[:] = par.alpha_L*(pm_L/mc_L)**(-par.gamma_L)*Y_L # M_L backed out from equating Y_L and M_L demand
+
+        N_N[:] = (1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1)*Y_N
+        N_L[:] = (1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1)*Y_L
 
         Y_N[:] = (par.alpha_N**(1/par.gamma_N)*M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)*(1/par.gamma_N)*(Z_N*N_N)**((par.gamma_N-1)/(par.gamma_N)))**(par.gamma_N/(par.gamma_N-1)) # production sector N
         Y_L[:] = (par.alpha_L**(1/par.gamma_L)*M_L**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)*(1/par.gamma_L)*(Z_L*N_L)**((par.gamma_L-1)/(par.gamma_L)))**(par.gamma_L/(par.gamma_L-1)) # production sector L
@@ -99,9 +102,9 @@ def block_pre(par,ini,ss,path,ncols=1):
         rstar[:] = par.r_target_ss
         istar[:] = pi + rstar
         i[:] = istar + par.phi*pi + par.phi_y*(Y-(ss.Y_N+Q*ss.Y_L)) # taylor rule
-        i_lag = lag(ini.i,i)
-        r[:] = (1+i_lag)/(1+pi)-1 ## Fix these taylor rule weights 
-        #r[:] = i-pi # fisher equation
+        #i_lag = lag(ini.i,i)
+        #r[:] = (1+i_lag)/(1+pi)-1 ## Fix these taylor rule weights 
+        r[:] = i-pi # fisher equation
 
         # c. government
         B[:] = ss.B
