@@ -90,21 +90,22 @@ def block_pre(par,ini,ss,path,ncols=1):
         N_N[:] = (1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1)*Y_N
         N_L[:] = (1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1)*Y_L
 
-        Y_N[:] = (par.alpha_N**(1/par.gamma_N)*M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)*(1/par.gamma_N)*(Z_N*N_N)**((par.gamma_N-1)/(par.gamma_N)))**(par.gamma_N/(par.gamma_N-1)) # production sector N
-        Y_L[:] = (par.alpha_L**(1/par.gamma_L)*M_L**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)*(1/par.gamma_L)*(Z_L*N_L)**((par.gamma_L-1)/(par.gamma_L)))**(par.gamma_L/(par.gamma_L-1)) # production sector L
-        Y[:] = (Y_N+Q*Y_L)*(1/P) # overall production
+        #Y_N[:] = (par.alpha_N**(1/par.gamma_N)*M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)*(1/par.gamma_N)*(Z_N*N_N)**((par.gamma_N-1)/(par.gamma_N)))**(par.gamma_N/(par.gamma_N-1)) # production sector N
+        Y_L[:] = (P*Y-Y_N)*(1/Q)
+        #Y_L[:] = (par.alpha_L**(1/par.gamma_L)*M_L**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)*(1/par.gamma_L)*(Z_L*N_L)**((par.gamma_L-1)/(par.gamma_L)))**(par.gamma_L/(par.gamma_L-1)) # production sector L
+        #Y[:] = (Y_N+Q*Y_L)*(1/P) # overall production
         Y_star[:] = (ss.Y_N+Q*ss.Y_L)*(1/P) # potential production
 
         d_N[:] = Y_N-w_N*N_N-pm_N*M_N-adjcost_N # dividends sector N
         d_L[:] = Y_L-w_L*N_L-pm_L*M_L-adjcost_L # dividends sector L
 
         # b. monetary policy
-        rstar[:] = par.r_target_ss
-        istar[:] = pi + rstar
+        #rstar[:] = par.r_target_ss
+        #istar[:] = pi + rstar
         i[:] = istar + par.phi*pi + par.phi_y*(Y-(ss.Y_N+Q*ss.Y_L)) # taylor rule
-        #i_lag = lag(ini.i,i)
-        #r[:] = (1+i_lag)/(1+pi)-1 ## Fix these taylor rule weights 
-        r[:] = i-pi # fisher equation
+        i_lag = lag(ini.i,i)
+        r[:] = (1+i_lag)/(1+pi)-1 ## Fix these taylor rule weights 
+        #r[:] = i-pi # fisher equation
 
         # c. government
         B[:] = ss.B
