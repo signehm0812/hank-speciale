@@ -32,8 +32,8 @@ def block_pre(par,ini,ss,path,ncols=1):
         i = path.i[ncol,:]
         N_hh = path.N_hh[ncol,:]
         N = path.N[ncol,:]
-        N_N = path.N[ncol,:]                
-        N_L = path.N[ncol,:]
+        N_N = path.N_N[ncol,:]                
+        N_L = path.N_L[ncol,:]
         #M = path.M[ncol,:]
         M_N = path.M_N[ncol,:]                
         M_L = path.M_L[ncol,:]
@@ -91,9 +91,9 @@ def block_pre(par,ini,ss,path,ncols=1):
         N_L[:] = (1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1)*Y_L
 
         #Y_N[:] = (par.alpha_N**(1/par.gamma_N)*M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)*(1/par.gamma_N)*(Z_N*N_N)**((par.gamma_N-1)/(par.gamma_N)))**(par.gamma_N/(par.gamma_N-1)) # production sector N
-        Y_L[:] = (P*Y-Y_N)*(1/Q)
+        #Y_L[:] = (P*Y-Y_N)*(1/Q)
         #Y_L[:] = (par.alpha_L**(1/par.gamma_L)*M_L**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)*(1/par.gamma_L)*(Z_L*N_L)**((par.gamma_L-1)/(par.gamma_L)))**(par.gamma_L/(par.gamma_L-1)) # production sector L
-        #Y[:] = (Y_N+Q*Y_L)*(1/P) # overall production
+        Y[:] = (Y_N+Q*Y_L)*(1/P) # overall production
         Y_star[:] = (ss.Y_N+Q*ss.Y_L)*(1/P) # potential production
 
         d_N[:] = Y_N-w_N*N_N-pm_N*M_N-adjcost_N # dividends sector N
@@ -102,7 +102,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         # b. monetary policy
         #rstar[:] = par.r_target_ss
         #istar[:] = pi + rstar
-        i[:] = istar + par.phi*pi + par.phi_y*(Y-(ss.Y_N+Q*ss.Y_L)) # taylor rule
+        i[:] = istar + par.phi*pi + par.phi_y*(Y-(Y_star)) # taylor rule
         i_lag = lag(ini.i,i)
         r[:] = (1+i_lag)/(1+pi)-1 ## Fix these taylor rule weights 
         #r[:] = i-pi # fisher equation
@@ -113,7 +113,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         G[:] = tau-r*B
         
         # d. aggregates
-        A[:] = B[:] = ss.B 
+        A[:] = ss.B
         C_N[:] = Y_N-adjcost_N-pm_N*M_N
         C_L[:] = Y_L-adjcost_L-pm_L*M_L
         C[:] = (C_N + Q*C_L)/P
@@ -148,8 +148,8 @@ def block_post(par,ini,ss,path,ncols=1):
         i = path.i[ncol,:]
         N_hh = path.N_hh[ncol,:]
         N = path.N[ncol,:]
-        N_N = path.N[ncol,:]                
-        N_L = path.N[ncol,:]
+        N_N = path.N_N[ncol,:]                
+        N_L = path.N_L[ncol,:]
         #M = path.M[ncol,:]
         M_N = path.M_N[ncol,:]                
         M_L = path.M_L[ncol,:]
@@ -186,13 +186,11 @@ def block_post(par,ini,ss,path,ncols=1):
         # a. phillips curve
         r_plus = lead(r,ss.r)
         pi_N_plus = lead(pi_N,ss.pi_N)
+        Q_lag = lag(ini.Q,Q)
+        pi_L[:] = (Q/Q_lag)*(1+pi_N)-1        
         pi_L_plus = lead(pi_L,ss.pi_L)
         Y_N_plus = lead(Y_N,ss.Y_N)
         Y_L_plus = lead(Y_L,ss.Y_L)
-        Q_lag = lag(ini.Q,Q)
-        pi_L[:] = Q/Q_lag*pi_N
-
-
         mc_N[:] = ((1-par.alpha_N)*(w_N/Z_N)**(1-par.gamma_N)+par.alpha_N*pm_N**(1-par.gamma_N))**(1/(1-par.gamma_N)) # marginal cost sector N
         mc_L[:] = ((1-par.alpha_L)*(w_L/Z_L)**(1-par.gamma_L)+par.alpha_L*pm_L**(1-par.gamma_L))**(1/(1-par.gamma_L)) # marginal cost sector L
         
