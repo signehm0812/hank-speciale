@@ -149,15 +149,18 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.jump_Z_N      = 0.0 # initial jump
         par.rho_Z_N       = 0.00 # AR(1) coefficeint
         par.std_Z_N       = 0.00 # std.
+
         par.jump_Z_L      = 0.0 # initial jump
         par.rho_Z_L       = 0.00 # AR(1) coefficeint
         par.std_Z_L       = 0.00 # std.
-        par.jump_istar  = -0.0025
-        par.rho_istar   = 0.61
-        par.std_istar   = 0.0025
-        par.jump_pm     = 0.25
-        par.rho_pm      = 0.7
-        par.std_pm      = 0.0025
+        
+        par.jump_istar    = -0.0025
+        par.rho_istar     = 0.61
+        par.std_istar     = 0.0025
+        
+        par.jump_pm_N     = 0.25
+        par.rho_pm_N      = 0.7
+        par.std_pm_N      = 0.0025
 
         # h. misc.
         par.T = 1000 # length of path        
