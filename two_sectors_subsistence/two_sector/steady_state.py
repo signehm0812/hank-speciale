@@ -73,7 +73,7 @@ def evaluate_ss(model,do_print=False):
     ss.G = par.G_target_ss
 
     # c.. monetary policy
-    ss.i = ss.istar = 0.0#((1+ss.r)/(1+ss.pi))-1
+    ss.i = ss.istar = (1+ss.r)*(1+ss.pi)-1
 
 #        i[:] = istar + par.phi*pi + par.phi_y*(Y-(Y_star)) # taylor rule
 #        i_lag = lag(ini.i,i)

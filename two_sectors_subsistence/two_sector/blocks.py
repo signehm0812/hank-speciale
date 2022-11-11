@@ -71,7 +71,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         # inflation
         Q_lag = lag(ini.Q,Q)
         pi_L[:] = (Q/Q_lag)*(1+pi_N)-1
-        pi[:] = pi_N**par.epsilon*pi_L**(1-par.epsilon) #preliminary inflation indexing
+        pi[:] = (1+pi_N)**par.epsilon*(1+pi_L)**(1-par.epsilon)-1 #preliminary inflation indexing
         
         # prices
         P[:] = (par.alpha_hh+(1-par.alpha_hh)*Q**(1-par.gamma_hh))**(1/(1-par.gamma_hh)) # price index
@@ -82,17 +82,17 @@ def block_pre(par,ini,ss,path,ncols=1):
         mc_N[:] = ((1-par.alpha_N)*(w_N/Z_N)**(1-par.gamma_N)+par.alpha_N*pm_N**(1-par.gamma_N))**(1/(1-par.gamma_N)) # marginal cost sector N
         mc_L[:] = ((1-par.alpha_L)*(w_L/Z_L)**(1-par.gamma_L)+par.alpha_L*pm_L**(1-par.gamma_L))**(1/(1-par.gamma_L)) # marginal cost sector L
 
-        #Y_N[:] = N_N/((1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1))
-        #Y_L[:] = N_L/((1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1))
+        Y_N[:] = N_N/((1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1))
+        Y_L[:] = N_L/((1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1))
 
         adjcost_N[:] = Y_N*(par.mu_N/(par.mu_N-1))*(1/(2*par.kappa_N))*(np.log(1+pi_N))**2 # adjustment cost sector N
         adjcost_L[:] = Y_L*(par.mu_L/(par.mu_L-1))*(1/(2*par.kappa_L))*(np.log(1+pi_L))**2 # adjustment cost sector L
 
-        N_N[:] = (1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1)*Y_N # N_N demand
-        N_L[:] = (1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1)*Y_L # N_L demand
+        #N_N[:] = (1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1)*Y_N # N_N demand
+        #N_L[:] = (1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1)*Y_L # N_L demand
 
-        Y_N[:] = N_N/(1-par.alpha_N)*(w_N/mc_N)**par.gamma_N*Z_N**(1-par.gamma_N) # Y_N backed out from N_N demand
-        Y_L[:] = N_L/(1-par.alpha_L)*(w_L/mc_L)**par.gamma_L*Z_L**(1-par.gamma_L) # Y_L backed out from N_L demand
+        #Y_N[:] = N_N/(1-par.alpha_N)*(w_N/mc_N)**par.gamma_N*Z_N**(1-par.gamma_N) # Y_N backed out from N_N demand
+        #Y_L[:] = N_L/(1-par.alpha_L)*(w_L/mc_L)**par.gamma_L*Z_L**(1-par.gamma_L) # Y_L backed out from N_L demand
 
 #       Y_N[:] = (par.alpha_N**(1/par.gamma_N)*M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)*(1/par.gamma_N)*(Z_N*N_N)**((par.gamma_N-1)/(par.gamma_N)))**(par.gamma_N/(par.gamma_N-1)) # production sector N
         #Y_L[:] = (P*Y-Y_N)*(1/Q)

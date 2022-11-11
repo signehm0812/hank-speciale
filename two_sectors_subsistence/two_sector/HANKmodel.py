@@ -29,7 +29,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         # c. GE
         self.shocks = ['istar','Z_N','Z_L','pm_N'] # exogenous inputs
-        self.unknowns = ['pi_N','Q','w_N','Y_L','Y_N'] # endogenous inputs
+        self.unknowns = ['pi_N','Q','w_N','N_L','N_N'] # endogenous inputs
         self.targets = ['NKPC_res_N','NKPC_res_L','clearing_A','clearing_N','clearing_C_N'] # targets
         
         # d. all variables
@@ -119,7 +119,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.gamma_N   = 0.5                                # substitution elasticity for sector N
         par.mu_L      = 1.2                                # mark-up for sector L
         par.mu_N      = 1.1                                # mark-up for sector 
-        par.kappa_L   = 0.15                               # price rigidity for sector L
+        par.kappa_L   = 0.1                               # price rigidity for sector L
         par.kappa_N   = 0.1                               # price rigidity for sector Nmodel.
 
         #par.M_N                 = 1.2
@@ -153,11 +153,13 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.jump_Z_L      = 0.0 # initial jump
         par.rho_Z_L       = 0.00 # AR(1) coefficeint
         par.std_Z_L       = 0.00 # std.
-        par.jump_istar  = 0.00
-        par.rho_istar   = 0.0
-        par.std_istar   = 0.0
-        par.jump_pm_N     = 0.01
-        par.rho_pm_N      = 0.9
+
+        par.jump_istar = -0.0
+        par.rho_istar = 0.0
+        par.std_istar = 0.0
+
+        par.jump_pm_N     = 0.0025
+        par.rho_pm_N      = 0.61
         par.std_pm_N      = 0.0025
 
         # h. misc.
