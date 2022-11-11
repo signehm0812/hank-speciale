@@ -88,17 +88,20 @@ def block_pre(par,ini,ss,path,ncols=1):
         adjcost_N[:] = Y_N*(par.mu_N/(par.mu_N-1))*(1/(2*par.kappa_N))*(np.log(1+pi_N))**2 # adjustment cost sector N
         adjcost_L[:] = Y_L*(par.mu_L/(par.mu_L-1))*(1/(2*par.kappa_L))*(np.log(1+pi_L))**2 # adjustment cost sector L
 
-        M_N[:] = par.alpha_N*(pm_N/mc_N)**(-par.gamma_N)*Y_N # M_N backed out from equating Y_N and M_N demand
-        M_L[:] = par.alpha_L*(pm_L/mc_L)**(-par.gamma_L)*Y_L # M_L backed out from equating Y_L and M_L demand
+        N_N[:] = (1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1)*Y_N # N_N demand
+        N_L[:] = (1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1)*Y_L # N_L demand
 
-        N_N[:] = (1-par.alpha_N)*(w_N/mc_N)**(-par.gamma_N)*Z_N**(par.gamma_N-1)*Y_N
-        N_L[:] = (1-par.alpha_L)*(w_L/mc_L)**(-par.gamma_L)*Z_L**(par.gamma_L-1)*Y_L
+        Y_N[:] = N_N/(1-par.alpha_N)*(w_N/mc_N)**par.gamma_N*Z_N**(1-par.gamma_N) # Y_N backed out from N_N demand
+        Y_L[:] = N_L/(1-par.alpha_L)*(w_L/mc_L)**par.gamma_L*Z_L**(1-par.gamma_L) # Y_L backed out from N_L demand
 
 #       Y_N[:] = (par.alpha_N**(1/par.gamma_N)*M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)*(1/par.gamma_N)*(Z_N*N_N)**((par.gamma_N-1)/(par.gamma_N)))**(par.gamma_N/(par.gamma_N-1)) # production sector N
         #Y_L[:] = (P*Y-Y_N)*(1/Q)
 #       Y_L[:] = (par.alpha_L**(1/par.gamma_L)*M_L**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)*(1/par.gamma_L)*(Z_L*N_L)**((par.gamma_L-1)/(par.gamma_L)))**(par.gamma_L/(par.gamma_L-1)) # production sector L
         Y[:] = (Y_N+Q*Y_L)*(1/P) # overall production
         Y_star[:] = (ss.Y_N+Q*ss.Y_L)*(1/P) # potential production
+
+        M_N[:] = par.alpha_N*(pm_N/mc_N)**(-par.gamma_N)*Y_N # M_N demand
+        M_L[:] = par.alpha_L*(pm_L/mc_L)**(-par.gamma_L)*Y_L # M_L demand
 
         d_N[:] = Y_N-w_N*N_N-pm_N*M_N-adjcost_N # dividends sector N
         d_L[:] = Y_L-w_L*N_L-pm_L*M_L-adjcost_L # dividends sector L

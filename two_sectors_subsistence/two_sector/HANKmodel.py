@@ -149,6 +149,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.jump_Z_N      = 0.0 # initial jump
         par.rho_Z_N       = 0.00 # AR(1) coefficeint
         par.std_Z_N       = 0.00 # std.
+
         par.jump_Z_L      = 0.0 # initial jump
         par.rho_Z_L       = 0.00 # AR(1) coefficeint
         par.std_Z_L       = 0.00 # std.
