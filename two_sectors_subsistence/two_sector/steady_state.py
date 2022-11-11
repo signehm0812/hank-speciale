@@ -58,10 +58,12 @@ def evaluate_ss(model,do_print=False):
     ss = model.ss
 
     # a. fixed
-    ss.pm_L = 1.1
+    ss.pm_L = 1.0
     ss.pi_N = 0.0
     ss.pi_L = 0.0
+    ss.pi = ss.pi_N**par.epsilon*ss.pi_L**(1-par.epsilon) #preliminary inflation indexing
     ss.Y = 1.0
+    ss.Y_star = 1.0
     ss.Y_L = 0.5
     #ss.Q = 1.0
 
@@ -71,7 +73,11 @@ def evaluate_ss(model,do_print=False):
     ss.G = par.G_target_ss
 
     # c.. monetary policy
-    ss.i = ss.r = ss.istar = 0.0
+    ss.i = ss.istar = 0.0#((1+ss.r)/(1+ss.pi))-1
+
+#        i[:] = istar + par.phi*pi + par.phi_y*(Y-(Y_star)) # taylor rule
+#        i_lag = lag(ini.i,i)
+#        r[:] = (1+i_lag)/(1+pi)-1 ## Fix these taylor rule weights 
 
     # d. firms  
     ss.P = (par.alpha_hh+ss.Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
@@ -97,7 +103,7 @@ def evaluate_ss(model,do_print=False):
     ss.d_L = ss.Y_L-ss.w_L*ss.N_L-ss.pm_L*ss.M_L-ss.adjcost_L
     ss.N = ss.N_N+ss.N_L
 
-    print(f'Z_N = {ss.Z_N:.4f},\t Z_L = {ss.Z_L:.4f},\t Q = {ss.Q:.4f},\t M_N = {ss.M_N:.4f},\t M_L = {ss.M_L:.4f},\t beta = {par.beta:.4f},\t N_N = {ss.N_N:.4f},\t N_L = {ss.N_L:.4f}') #Print so we can see what goes wrong if root solving doesnt converge
+    #print(f'Z_N = {ss.Z_N:.4f},\t Z_L = {ss.Z_L:.4f},\t Q = {ss.Q:.4f},\t M_N = {ss.M_N:.4f},\t M_L = {ss.M_L:.4f},\t beta = {par.beta:.4f},\t N_N = {ss.N_N:.4f},\t N_L = {ss.N_L:.4f}') #Print so we can see what goes wrong if root solving doesnt converge
     
     # e. government
     ss.tau = ss.r*ss.B + ss.G
@@ -105,8 +111,6 @@ def evaluate_ss(model,do_print=False):
     # f. household 
     model.solve_hh_ss(do_print=do_print)
     model.simulate_hh_ss(do_print=do_print)
-
-
 
     # g. market clearing
     ss.C_N = ss.Y_N-ss.adjcost_N-ss.pm_N*ss.M_N
@@ -137,7 +141,7 @@ def objective_ss(x,model,do_print=False):
 
     if par.beta <=0.94: par.beta = 0.94
 
-    if par.beta > 1.0: par.beta = 1.0
+    if par.beta > 1/(1+ss.r): par.beta = 1/(1+ss.r)
 
     if par.varphi <=0.5: par.varphi = 0.5
 
@@ -185,16 +189,28 @@ def find_ss(model,do_print=False):
         print(f'steady state found in {elapsed(t0)}')
         #print(f' M_N   = {res.x[0]:8.4f}')
         #print(f' beta   = {res.x[1]:8.4f}')
-        print(f' Z_N   = {ss.Z_N:8.4f}')
+        print(f' Q   = {ss.Q:8.4f}')
+        print(f' P   = {ss.P:8.4f}')
+        print(f' C Luxury low   = {np.average(ss.c_L[0,0]):8.4f}')
+        print(f' C Luxury high   = {np.average(ss.c_L[0,6]):8.4f}')
+        print(f' C Necessity low   = {np.average(ss.c_N[0,0]):8.4f}')
+        print(f' C necessity high   = {np.average(ss.c_N[0,6]):8.4f}')
+        print(f' p low   = {np.average(ss.p[0,0]):8.4f}')
+        print(f' p high   = {np.average(ss.p[0,6]):8.4f}')
+#       print(f' C_L_hh high   = {ss.C_L_hh:8.4f}')
+#       print(f' C_N_hh   = {ss.C_L_hh:8.4f}')
+#       print(f' C_L_hh   = {ss.C_L_hh:8.4f}')
+        print(f' Z_N   = {ss.Z_N:8.4f}')        
         print(f' Z_L   = {ss.Z_L:8.4f}')        
         print(f' M_N   = {ss.M_N:8.4f}')
         print(f' M_L   = {ss.M_L:8.4f}')          
+        print(f' N_L   = {ss.N_L:8.4f}')          
+        print(f' N_N   = {ss.N_N:8.4f}')          
         print(f' HH_ell   = {ss.ELL_hh:8.4f}')  
         print(f' wage N  = {ss.w_N:8.4f}')    
         print(f' wage L  = {ss.w_L:8.4f}')                  
         print(f' par.varphi   = {par.varphi:8.4f}')
         print(f' par.beta   = {par.beta:8.4f}')                
-        print('')
         print(f'Discrepancy in B = {ss.A-ss.A_hh:12.8f}')
         print(f'Discrepancy in C = {ss.C-ss.C_hh:12.8f}')
         print(f'Discrepancy in C_L = {ss.C_L-ss.C_L_hh:12.8f}')

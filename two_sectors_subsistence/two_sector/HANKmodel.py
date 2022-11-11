@@ -24,7 +24,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         self.pols_hh = ['a'] # policy functions
         self.inputs_hh = ['w_N','r','d_N','d_L','tau','Q','P'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
-        self.outputs_hh = ['a','c','c_hat_N','c_N','c_L','ell','n'] # outputs
+        self.outputs_hh = ['a','c','c_hat_N','c_N','c_L','ell','n','p'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE
@@ -95,13 +95,14 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.Nfix                = 1                                   # number of fixed discrete states (either work in L or N sector)
         par.Nz                  = 7                                   # number of stochastic discrete states (here productivity)
         par.r_target_ss         = 0.005
+        par.epsilon             = 0.3
 
         # a. preferences
         par.beta = 0.9875 # discount factor (guess, calibrated in ss)
         par.varphi = 0.8 # disutility of labor (guess, calibrated in ss)
-        par.alpha_hh               = 0.25
+        par.alpha_hh               = 0.5
         par.gamma_hh               = 1.5                                 # Elasticity of substitution
-        par.c_bar                  = 0.0
+        par.c_bar                  = 0.1
 
         par.sigma = 2.0 # inverse of intertemporal elasticity of substitution
         par.nu = 2.0 # inverse Frisch elasticity
@@ -111,16 +112,15 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.sigma_psi = np.sqrt(0.50**2*(1-par.rho_z**2)) # std. of psi
 
         # d. price setting
-        par.alpha_L             = 0.25                               # cobb-douglas for sector L
-        par.alpha_N             = 0.5                                # cobb-douglas for sector N
-        par.gamma_L             = 0.5                                # substitution elasticity for sector L
-        par.gamma_N             = 0.5                                # substitution elasticity for sector N
-        par.mu_L                = 1.1                                # mark-up for sector L
-        par.mu_N                = 1.1                                # mark-up for sector N
-        par.kappa_L             = 0.15                               # price rigidity for sector L
-        par.kappa_N             = 0.15                               # price rigidity for sector N
-        par.epsilon             = 0.3                                # inflation index weight
-        #par.Gamma_ss           = 1.0                                # direct approach: technology level in steady state
+        par.alpha_hh  = 0.25                                # weight on necessity goods above subsistence level 
+        par.alpha_L   = 0.25                                # cobb-douglas for sector L
+        par.alpha_N   = 0.75                                # cobb-douglas for sector N
+        par.gamma_L   = 0.5                                # substitution elasticity for sector L
+        par.gamma_N   = 0.5                                # substitution elasticity for sector N
+        par.mu_L      = 1.2                                # mark-up for sector L
+        par.mu_N      = 1.1                                # mark-up for sector 
+        par.kappa_L   = 0.15                               # price rigidity for sector L
+        par.kappa_N   = 0.1                               # price rigidity for sector Nmodel.
 
         #par.M_N                 = 1.2
         #par.M_L                 = 0.8
@@ -152,12 +152,12 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.jump_Z_L      = 0.0 # initial jump
         par.rho_Z_L       = 0.00 # AR(1) coefficeint
         par.std_Z_L       = 0.00 # std.
-        par.jump_istar  = -0.0025
-        par.rho_istar   = 0.61
-        par.std_istar   = 0.0025
-        par.jump_pm     = 0.25
-        par.rho_pm      = 0.7
-        par.std_pm      = 0.0025
+        par.jump_istar  = 0.00
+        par.rho_istar   = 0.0
+        par.std_istar   = 0.0
+        par.jump_pm_N     = 0.01
+        par.rho_pm_N      = 0.9
+        par.std_pm_N      = 0.0025
 
         # h. misc.
         par.T = 1000 # length of path        
