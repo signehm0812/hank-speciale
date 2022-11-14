@@ -95,7 +95,6 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.Nfix                = 1                                   # number of fixed discrete states (either work in L or N sector)
         par.Nz                  = 7                                   # number of stochastic discrete states (here productivity)
         par.r_target_ss         = 0.005
-        par.epsilon             = 0.3
 
         # a. preferences
         par.beta = 0.9875 # discount factor (guess, calibrated in ss)
@@ -112,15 +111,15 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.sigma_psi = np.sqrt(0.50**2*(1-par.rho_z**2)) # std. of psi
 
         # d. price setting
-        par.alpha_hh  = 0.25                                # weight on necessity goods above subsistence level 
+        par.alpha_hh  = 0.33                                # weight on necessity goods above subsistence level 
         par.alpha_L   = 0.25                                # cobb-douglas for sector L
         par.alpha_N   = 0.75                                # cobb-douglas for sector N
         par.gamma_L   = 0.5                                # substitution elasticity for sector L
-        par.gamma_N   = 0.5                                # substitution elasticity for sector N
+        par.gamma_N   = 0.1                                # substitution elasticity for sector N
         par.mu_L      = 1.2                                # mark-up for sector L
         par.mu_N      = 1.1                                # mark-up for sector 
         par.kappa_L   = 0.1                               # price rigidity for sector L
-        par.kappa_N   = 0.1                               # price rigidity for sector Nmodel.
+        par.kappa_N   = 0.5                               # price rigidity for sector Nmodel.
 
         #par.M_N                 = 1.2
         #par.M_L                 = 0.8
@@ -134,8 +133,9 @@ class HANKModelClass(EconModelClass,GEModelClass):
         #par.M                   = 1.2
 
         # e. government
-        par.phi = 1.5 # Taylor rule coefficient on inflation
-        par.phi_y = 0.0 # Taylor rule coefficient on output
+        par.phi         = 1.5 # Taylor rule coefficient on inflation
+        par.phi_y       = 0.0 # Taylor rule coefficient on output
+        par.epsilon     = 0.5 # Taylor rule inflation weights
         
         par.G_target_ss = 0.0 # government spending
         par.B_target_ss = 5.6 # bond supply
@@ -158,9 +158,9 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.rho_istar = 0.0
         par.std_istar = 0.0
 
-        par.jump_pm_N     = 0.0025
+        par.jump_pm_N     = 0.025
         par.rho_pm_N      = 0.61
-        par.std_pm_N      = 0.0025
+        par.std_pm_N      = 0.025
 
         # h. misc.
         par.T = 1000 # length of path        
