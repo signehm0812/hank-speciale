@@ -98,9 +98,9 @@ class HANKModelClass(EconModelClass,GEModelClass):
 
         # a. preferences
         par.beta = 0.9875 # discount factor (guess, calibrated in ss)
-        par.varphi = 0.8 # disutility of labor (guess, calibrated in ss)
-        par.alpha_hh               = 0.5
-        par.gamma_hh               = 1.5                                 # Elasticity of substitution
+        par.varphi = 1.0 # disutility of labor
+        par.alpha_hh               = 0.25
+        par.gamma_hh               = 0.1                                 # Elasticity of substitution
         par.c_bar                  = 0.1
 
         par.sigma = 2.0 # inverse of intertemporal elasticity of substitution
@@ -111,31 +111,19 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.sigma_psi = np.sqrt(0.50**2*(1-par.rho_z**2)) # std. of psi
 
         # d. price setting
-        par.alpha_hh  = 0.33                                # weight on necessity goods above subsistence level 
-        par.alpha_L   = 0.25                                # cobb-douglas for sector L
-        par.alpha_N   = 0.75                                # cobb-douglas for sector N
-        par.gamma_L   = 0.5                                # substitution elasticity for sector L
+        par.alpha_L   = 0.33                                # cobb-douglas for sector L
+        par.alpha_N   = 0.66                                # cobb-douglas for sector N
+        par.gamma_L   = 0.1                                # substitution elasticity for sector L
         par.gamma_N   = 0.1                                # substitution elasticity for sector N
-        par.mu_L      = 1.2                                # mark-up for sector L
-        par.mu_N      = 1.1                                # mark-up for sector 
+        par.mu_L      = 1.8                                # mark-up for sector L
+        par.mu_N      = 1.2                                # mark-up for sector 
         par.kappa_L   = 0.1                               # price rigidity for sector L
         par.kappa_N   = 0.5                               # price rigidity for sector Nmodel.
-
-        #par.M_N                 = 1.2
-        #par.M_L                 = 0.8
-        #par.M = par.M_L + par.M_N
-
-        #par.alpha               = 0.3
-        #par.gamma               = 1.1                                 # Elasticity of substitution
-        #par.mu                  = 1.2                                 # mark-up
-        #par.kappa               = 0.1                                 # slope of Phillips curve
-        #par.pm                  = 0.8
-        #par.M                   = 1.2
-
+        
         # e. government
         par.phi         = 1.5 # Taylor rule coefficient on inflation
         par.phi_y       = 0.0 # Taylor rule coefficient on output
-        par.epsilon     = 0.5 # Taylor rule inflation weights
+        par.epsilon     = 0.416 # Taylor rule inflation weights
         
         par.G_target_ss = 0.0 # government spending
         par.B_target_ss = 5.6 # bond supply

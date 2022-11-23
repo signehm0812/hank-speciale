@@ -78,11 +78,11 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,P,vbeg_a_plus,vbeg_a,a,c,
 
         #c_hat[i_fix,:,:] = c[i_fix,:,:] - par.c_bar/(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh))
         #c_hat_N[i_fix,:,:] = par.alpha_hh*(par.alpha_hh+Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(par.gamma_hh/(1-par.gamma_hh))*(c[i_fix,:,:] - par.c_bar/P)
-        c_hat_N[i_fix,:,:] = par.alpha_hh*P**(par.gamma_hh)*(c[i_fix,:,:] - par.c_bar/P)
-        c_N[i_fix,:,:] = c_hat_N[i_fix,:,:] + par.c_bar
-        c_L[i_fix,:,:] = (P/Q)**(par.gamma_hh)*(1-par.alpha_hh)*(c[i_fix,:,:] - par.c_bar/P)
-        p[i_fix,:,:] = (par.c_bar+P**par.gamma_hh*(par.alpha_hh*(c[i_fix,:,:]-par.c_bar)+(1-par.alpha_hh)*Q**(1-par.gamma_hh)*(c[i_fix,:,:]-par.c_bar)))/(c[i_fix,:,:])
-        #p[i_fix,:,:] = (par.c_bar+(P*(c[i_fix,:,:] - par.c_bar/P)))/(c[i_fix,:,:])
+        c_hat_N[i_fix,:,:] = par.alpha_hh*P**(par.gamma_hh)*(c[i_fix,:,:] - par.c_bar/P) #Correct (c without c_bar)
+        c_N[i_fix,:,:] = c_hat_N[i_fix,:,:] + par.c_bar #Correct c_N 
+        c_L[i_fix,:,:] = (P/Q)**(par.gamma_hh)*(1-par.alpha_hh)*(c[i_fix,:,:] - par.c_bar/P) #Correct c_L 
+        #p[i_fix,:,:] = (par.c_bar+P**par.gamma_hh*(par.alpha_hh*(c[i_fix,:,:]-par.c_bar)+(1-par.alpha_hh)*Q**(1-par.gamma_hh)*(c[i_fix,:,:]-par.c_bar)))/(c[i_fix,:,:])
+        p[i_fix,:,:] = (par.c_bar+(P*(c[i_fix,:,:] - par.c_bar)))/(c[i_fix,:,:])
 
         # b. expectation step
         v_a = c[i_fix,:,:]**(-par.sigma)

@@ -64,7 +64,7 @@ def evaluate_ss(model,do_print=False):
     ss.pi = ss.pi_N**par.epsilon*ss.pi_L**(1-par.epsilon) #preliminary inflation indexing
     ss.Y = 1.0
     ss.Y_star = 1.0
-    ss.Y_L = 0.5
+    ss.Y_L = 0.4
     #ss.Q = 1.0
 
     # b. targets
@@ -191,12 +191,12 @@ def find_ss(model,do_print=False):
         #print(f' beta   = {res.x[1]:8.4f}')
         print(f' Q   = {ss.Q:8.4f}')
         print(f' P   = {ss.P:8.4f}')
-        print(f' C Luxury low   = {np.average(ss.c_L[0,0]):8.4f}')
-        print(f' C Luxury high   = {np.average(ss.c_L[0,6]):8.4f}')
-        print(f' C Necessity low   = {np.average(ss.c_N[0,0]):8.4f}')
-        print(f' C necessity high   = {np.average(ss.c_N[0,6]):8.4f}')
-        print(f' p low   = {np.average(ss.p[0,0]):8.4f}')
-        print(f' p high   = {np.average(ss.p[0,6]):8.4f}')
+        #print(f' C Luxury low   = {np.average(ss.c_L[0,0]):8.4f}')
+        #print(f' C Luxury high   = {np.average(ss.c_L[0,6]):8.4f}')
+        #print(f' C Necessity low   = {np.average(ss.c_N[0,0]):8.4f}')
+        #print(f' C necessity high   = {np.average(ss.c_N[0,6]):8.4f}')
+        #print(f' p low   = {np.average(ss.p[0,0]):8.4f}')
+        #print(f' p high   = {np.average(ss.p[0,6]):8.4f}')
 #       print(f' C_L_hh high   = {ss.C_L_hh:8.4f}')
 #       print(f' C_N_hh   = {ss.C_L_hh:8.4f}')
 #       print(f' C_L_hh   = {ss.C_L_hh:8.4f}')
