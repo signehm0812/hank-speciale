@@ -64,7 +64,7 @@ def evaluate_ss(model,do_print=False):
     ss.pi = ss.pi_N**par.epsilon*ss.pi_L**(1-par.epsilon) #preliminary inflation indexing
     ss.Y = 1.0
     ss.Y_star = 1.0
-    ss.Y_L = 0.4
+    ss.Y_L = 0.5
     #ss.Q = 1.0
 
     # b. targets
@@ -106,7 +106,7 @@ def evaluate_ss(model,do_print=False):
     #print(f'Z_N = {ss.Z_N:.4f},\t Z_L = {ss.Z_L:.4f},\t Q = {ss.Q:.4f},\t M_N = {ss.M_N:.4f},\t M_L = {ss.M_L:.4f},\t beta = {par.beta:.4f},\t N_N = {ss.N_N:.4f},\t N_L = {ss.N_L:.4f}') #Print so we can see what goes wrong if root solving doesnt converge
     
     # e. government
-    ss.tau = ss.r*ss.B + ss.G
+    ss.tau = ss.r*ss.B + ss.G + par.chi
 
     # f. household 
     model.solve_hh_ss(do_print=do_print)
