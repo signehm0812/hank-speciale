@@ -61,11 +61,12 @@ def evaluate_ss(model,do_print=False):
     ss.pm_L = 1.0
     ss.pi_N = 0.0
     ss.pi_L = 0.0
+    ss.p_N = 1.0
+    ss.p_L = ss.Q*ss.p_N
     ss.pi = ss.pi_N**par.epsilon*ss.pi_L**(1-par.epsilon) #preliminary inflation indexing
     ss.Y = 1.0
     ss.Y_star = 1.0
     ss.Y_L = 0.5
-    #ss.Q = 1.0
 
     # b. targets
     ss.r = par.r_target_ss
@@ -79,15 +80,16 @@ def evaluate_ss(model,do_print=False):
 #        i_lag = lag(ini.i,i)
 #        r[:] = (1+i_lag)/(1+pi)-1 ## Fix these taylor rule weights 
 
-    # d. firms  
-    ss.P = (par.alpha_hh+ss.Q**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
+    # d. firms
+    ss.P = (ss.p_N**(1-par.gamma_hh)*par.alpha_hh+ss.p_L**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
+    #ss.P = (par.alpha_hh*(1+ss.pi_N)**(1-par.gamma_hh)+((1+ss.pi_L)*ss.Q)**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
     #ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)*ss.Q**(par.gamma_L*(1-par.gamma_L)-1)-par.alpha_L*ss.pm**(1-par.gamma_L)*ss.Q**(par.gamma_L-1))/(1-par.alpha_L))**(1/(1-par.gamma_L))
     ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm_L**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
     ss.w_N = ss.Q*ss.w_L
     ss.pm_N = ss.Q*ss.pm_L
     ss.Z_N = ss.w_N*((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm_N**(1-par.gamma_N))/(1-par.alpha_N))**(-1/(1-par.gamma_N))
     #ss.Z_N = ss.w_N/((par.mu_N**(par.gamma_N-1)-par.alpha_L*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))
-    ss.Y_N = ss.Y*ss.P-ss.Q*ss.Y_L
+    ss.Y_N = ss.Y*ss.P/ss.p_N-ss.Q*ss.Y_L
     ss.mc_N = ((1-par.alpha_N)*(ss.w_N/ss.Z_N)**(1-par.gamma_N)+par.alpha_N*ss.pm_N**(1-par.gamma_N))**(1/(1-par.gamma_N))
     #ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
     ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm_L**(1-par.gamma_L))**(1/(1-par.gamma_L))
@@ -116,7 +118,7 @@ def evaluate_ss(model,do_print=False):
     ss.C_N = ss.Y_N-ss.adjcost_N-ss.pm_N*ss.M_N
     ss.C_L = ss.Y_L-ss.adjcost_L-ss.pm_L*ss.M_L
     
-    ss.C = (ss.C_N + ss.Q*ss.C_L)/ss.P
+    ss.C = (ss.C_N + ss.Q*ss.C_L)*(ss.p_N/ss.P)
 
 def objective_ss(x,model,do_print=False):
     """ objective function for finding steady state """

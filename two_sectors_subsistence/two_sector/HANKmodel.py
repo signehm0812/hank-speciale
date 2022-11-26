@@ -22,7 +22,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['w_N','r','d_N','d_L','tau','Q','P'] # direct inputs
+        self.inputs_hh = ['w_N','r','d_N','d_L','tau','p_N','p_L','Q','P'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
         self.outputs_hh = ['a','c','c_hat_N','c_N','c_L','ell','n','p','u'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
@@ -58,6 +58,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'pm_N',
             'NKPC_res_N',
             'NKPC_res_L',
+            'p_N',
+            'p_L',
             'pi',
             'pi_N',
             'pi_L',                        
@@ -99,7 +101,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         # a. preferences
         par.beta = 0.9875                       # discount factor (guess, calibrated in ss)
         par.varphi = 1.0                        # disutility of labor
-        par.alpha_hh               = 0.35       # Net of subsistence weight on necessity goods
+        par.alpha_hh               = 1/3       # Net of subsistence weight on necessity goods
         par.gamma_hh               = 0.2        # Elasticity of substitution
         par.c_bar                  = 0.05
         par.chi                    = 0.05       #Government transfer
@@ -146,16 +148,18 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.rho_Z_L       = 0.00                # AR(1) coefficeint
         par.std_Z_L       = 0.00                # std.
 
-        par.jump_istar = -0.0
-        par.rho_istar = 0.0
-        par.std_istar = 0.0
+        #par.jump_istar = 0.0025
+        par.jump_istar = 0.0
+        par.rho_istar = 0.61
+        par.std_istar = 0.0025
 
-        par.jump_pm_N     = 0.01
+        #par.jump_pm_N     = 0.01
+        par.jump_pm_N     = 0.0
         par.rho_pm_N      = 0.9
         par.std_pm_N      = 0.01
 
         # h. misc.
-        par.T = 1000                            # length of path        
+        par.T = 250                            # length of path        
 
         par.max_iter_solve = 50_000             # maximum number of iterations when solving
         par.max_iter_simulate = 50_000          # maximum number of iterations when simulating

@@ -52,6 +52,8 @@ def block_pre(par,ini,ss,path,ncols=1):
         Y_L = path.Y_L[ncol,:]
         Y_star = path.Y_star[ncol,:]
         Q = path.Q[ncol,:]
+        p_N = path.p_N[ncol,:]
+        p_L = path.p_L[ncol,:]
         P = path.P[ncol,:]
         Z_N = path.Z_N[ncol,:]
         Z_L = path.Z_L[ncol,:]
@@ -71,10 +73,16 @@ def block_pre(par,ini,ss,path,ncols=1):
         # inflation
         Q_lag = lag(ini.Q,Q)
         pi_L[:] = (Q/Q_lag)*(1+pi_N)-1
+        p_N_lag = lag(ini.p_N,p_N)
+        p_N[:] = (pi_N+1)*p_N_lag
+        p_L[:] = Q*p_N
+        P_hh_lag = lag(ini.P_hh,P_hh)
+        #pi[:] = P_hh/P_hh_lag-1 #preliminary inflation indexing
         pi[:] = (1+pi_N)**par.epsilon*(1+pi_L)**(1-par.epsilon)-1 #preliminary inflation indexing
         
         # prices
-        P[:] = (par.alpha_hh+(1-par.alpha_hh)*Q**(1-par.gamma_hh))**(1/(1-par.gamma_hh)) # price index
+        P[:] = (par.alpha_hh*p_N**(1-par.gamma_hh)+(1-par.alpha_hh)*p_L**(1-par.gamma_hh))**(1/(1-par.gamma_hh)) # price index
+        #P[:] = ((1+pi_N)**(1-par.gamma_hh)*par.alpha_hh+(1-par.alpha_hh)*Q**(1-par.gamma_hh))**(1/(1-par.gamma_hh)) # price index
         w_L[:] = (1/Q)*w_N # real wage rate
         pm_L[:] = (1/Q)*pm_N # real raw material price
 
@@ -97,8 +105,8 @@ def block_pre(par,ini,ss,path,ncols=1):
 #       Y_N[:] = (par.alpha_N**(1/par.gamma_N)*M_N**((par.gamma_N-1)/par.gamma_N)+(1-par.alpha_N)*(1/par.gamma_N)*(Z_N*N_N)**((par.gamma_N-1)/(par.gamma_N)))**(par.gamma_N/(par.gamma_N-1)) # production sector N
         #Y_L[:] = (P*Y-Y_N)*(1/Q)
 #       Y_L[:] = (par.alpha_L**(1/par.gamma_L)*M_L**((par.gamma_L-1)/par.gamma_L)+(1-par.alpha_L)*(1/par.gamma_L)*(Z_L*N_L)**((par.gamma_L-1)/(par.gamma_L)))**(par.gamma_L/(par.gamma_L-1)) # production sector L
-        Y[:] = (Y_N+Q*Y_L)*(1/P) # overall production
-        Y_star[:] = (ss.Y_N+Q*ss.Y_L)*(1/P) # potential production
+        Y[:] = (Y_N+Q*Y_L)*(p_N/P) # overall production
+        Y_star[:] = (ss.Y_N+Q*ss.Y_L)*(p_N/P) # potential production
 
         M_N[:] = par.alpha_N*(pm_N/mc_N)**(-par.gamma_N)*Y_N # M_N demand
         M_L[:] = par.alpha_L*(pm_L/mc_L)**(-par.gamma_L)*Y_L # M_L demand
@@ -123,7 +131,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         A[:] = ss.B
         C_N[:] = Y_N-adjcost_N-pm_N*M_N
         C_L[:] = Y_L-adjcost_L-pm_L*M_L
-        C[:] = (C_N + Q*C_L)/P
+        C[:] = (C_N + Q*C_L)*(p_N/P)
         N[:] = N_N + N_L
 
 @nb.njit
@@ -185,6 +193,7 @@ def block_post(par,ini,ss,path,ncols=1):
         C_L_hh = path.C_L_hh[ncol,:]
         ELL_hh = path.ELL_hh[ncol,:]
         N_hh = path.N_hh[ncol,:]
+        p_N = path.p_N[ncol,:]
         P_hh = path.P_hh[ncol,:]
 
         #################
