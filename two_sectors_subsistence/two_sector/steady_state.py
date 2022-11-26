@@ -73,28 +73,18 @@ def evaluate_ss(model,do_print=False):
     ss.A = ss.B = par.B_target_ss
     ss.G = par.G_target_ss
 
-    # c.. monetary policy
+    # c. monetary policy
     ss.i = ss.istar = (1+ss.r)*(1+ss.pi)-1
-
-#        i[:] = istar + par.phi*pi + par.phi_y*(Y-(Y_star)) # taylor rule
-#        i_lag = lag(ini.i,i)
-#        r[:] = (1+i_lag)/(1+pi)-1 ## Fix these taylor rule weights 
 
     # d. firms
     ss.P = (ss.p_N**(1-par.gamma_hh)*par.alpha_hh+ss.p_L**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
-    #ss.P = (par.alpha_hh*(1+ss.pi_N)**(1-par.gamma_hh)+((1+ss.pi_L)*ss.Q)**(1-par.gamma_hh)*(1-par.alpha_hh))**(1/(1-par.gamma_hh)) 
-    #ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)*ss.Q**(par.gamma_L*(1-par.gamma_L)-1)-par.alpha_L*ss.pm**(1-par.gamma_L)*ss.Q**(par.gamma_L-1))/(1-par.alpha_L))**(1/(1-par.gamma_L))
     ss.w_L = (ss.Z_L)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm_L**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))
     ss.w_N = ss.Q*ss.w_L
     ss.pm_N = ss.Q*ss.pm_L
     ss.Z_N = ss.w_N*((par.mu_N**(par.gamma_N-1)-par.alpha_N*ss.pm_N**(1-par.gamma_N))/(1-par.alpha_N))**(-1/(1-par.gamma_N))
-    #ss.Z_N = ss.w_N/((par.mu_N**(par.gamma_N-1)-par.alpha_L*ss.pm**(1-par.gamma_N))/(1-par.alpha_N))**(1/(1-par.gamma_N))
     ss.Y_N = ss.Y*ss.P/ss.p_N-ss.Q*ss.Y_L
     ss.mc_N = ((1-par.alpha_N)*(ss.w_N/ss.Z_N)**(1-par.gamma_N)+par.alpha_N*ss.pm_N**(1-par.gamma_N))**(1/(1-par.gamma_N))
-    #ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L))**(1/(1-par.gamma_L))
     ss.mc_L = ((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm_L**(1-par.gamma_L))**(1/(1-par.gamma_L))
-    #ss.mc_L = ss.Q**(par.gamma_L/(1-par.gamma_L))*((1-par.alpha_L)*(ss.w_L/ss.Z_L)**(1-par.gamma_L)+par.alpha_L*ss.pm**(1-par.gamma_L)*ss.Q**(par.gamma_L-1))**(1/(1-par.gamma_L))
-    #ss.M_L = par.alpha_L*(ss.pm/ss.mc_L)**(-par.gamma_L)*ss.Y_L*ss.Q**(par.gamma_L)
     ss.M_L = par.alpha_L*(ss.pm_L/ss.mc_L)**(-par.gamma_L)*ss.Y_L
     ss.N_L = (1-par.alpha_L)*(ss.w_L/ss.mc_L)**(-par.gamma_L)*ss.Z_L**(par.gamma_L-1)*ss.Y_L    
     ss.M_N = par.alpha_N*(ss.pm_N/ss.mc_N)**(-par.gamma_N)*ss.Y_N    
@@ -126,12 +116,9 @@ def objective_ss(x,model,do_print=False):
     par = model.par
     ss = model.ss
 
-    #ss.M_L = x[0]
-    #ss.N_L = x[1]
     ss.Z_L = x[0]
     par.beta = x[1]
     ss.Q = x[2]
-    #par.varphi = x[3]
 
     if ss.Q <= 0: ss.Q = 0.1
 
@@ -151,14 +138,6 @@ def objective_ss(x,model,do_print=False):
     
     evaluate_ss(model,do_print=do_print)
     
-    #
-    #par.varphi = ss.w_N/(ss.ELL_hh**(par.nu)*((ss.C**par.sigma)*ss.C_HAT_N_hh/par.alpha_hh)**(1/par.gamma_hh))
-    #*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))*ss.Q*ss.Z_L
-        
-    #if par.varphi >= 1.9: par.varphi = 1.9
-
-
-    #return np.array([ss.A_hh-ss.B])
     return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N,ss.C_N_hh-ss.C_N])
 
 def find_ss(model,do_print=False):
@@ -175,12 +154,7 @@ def find_ss(model,do_print=False):
 #   ss.N_L = 0.5
     ss.Q = 1.0
 
-    #res = optimize.root(objective_ss,[par.beta, par.varphi],method='hybr',tol=par.tol_ss,args=(model))
     res = optimize.root(objective_ss,[ss.Z_L,par.beta,ss.Q],method='hybr',tol=par.tol_ss,args=(model))
-
-#    par.varphi = ss.ELL_hh**(-par.nu)*((ss.C**par.sigma)*ss.C_HAT_N_hh/par.alpha_hh)**(-1/par.gamma_hh)*((par.mu_L**(par.gamma_L-1)-par.alpha_L*ss.pm**(1-par.gamma_L))/(1-par.alpha_L))**(1/(1-par.gamma_L))*ss.Q/ss.Z_L
-        
-#    if par.varphi >= 2.0: par.varphi = 2.0
 
     # final evaluation
     objective_ss(res.x,model)
