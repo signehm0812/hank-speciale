@@ -52,6 +52,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         Y_L = path.Y_L[ncol,:]
         Y_star = path.Y_star[ncol,:]
         Q = path.Q[ncol,:]
+        Q_check = path.Q_check[ncol,:]
         p_N = path.p_N[ncol,:]
         p_L = path.p_L[ncol,:]
         P = path.P[ncol,:]
@@ -71,13 +72,37 @@ def block_pre(par,ini,ss,path,ncols=1):
         #################
 
         # inflation
-        Q_lag = lag(ini.Q,Q)
-        pi_L[:] = (Q/Q_lag)*(1+pi_N)-1
-        p_N_lag = lag(ini.p_N,p_N)
-        p_N[:] = (pi_N+1)*p_N_lag
-        p_L[:] = Q*p_N
-        P_hh_lag = lag(ini.P_hh,P_hh)
-        #pi[:] = P_hh/P_hh_lag-1 #preliminary inflation indexing
+        #Q_lag = lag(ini.Q,Q)
+        pi_L[:] = (Q/ss.Q)*(1+pi_N)-1
+        #pi_L[:] = (Q/Q_lag)*(1+pi_N)-1
+        
+        # back out prices option 1 - inflation is multiplicative, standard solution goes wrong after 5 periods?
+
+        #p_N_lag = lag(ini.p_N,p_N)
+        #p_N[:] = (pi_N+1)*p_N_lag
+        #p_L[:] = Q*p_N
+
+
+        # back out prices option 2 - inflation is multiplicative, and needs to be looped?              
+        #for t in range(par.T):
+        #
+        #    # i. lag
+        #    p_N_lag = p_N[t-1] if t > 0 else ss.p_N
+        #    p_N[t] = (pi_N[t]+1)*p_N_lag
+        #    p_L[t] = Q[t]*p_N[t]
+        
+                
+        # back out prices option 3 - inflation is just relative to steady state         
+        p_N[:] = (1+pi_N)*ss.p_N
+        p_L[:] = (1+pi_L)*ss.p_L # - What goes wrong here? Model still runs fine, but not as it should
+        #p_L[:] = Q*p_N
+        Q_check[:] = p_L/p_N
+        
+        #Inflation option one
+        #P_hh_lag = lag(ini.P_hh,P_hh)
+        #pi[:] = P_hh/P_hh_lag-1 #preliminary inflation indexing - only works if inflation is as above
+        
+        #Inflation option two - standard        
         pi[:] = (1+pi_N)**par.epsilon*(1+pi_L)**(1-par.epsilon)-1 #preliminary inflation indexing
         
         # prices
