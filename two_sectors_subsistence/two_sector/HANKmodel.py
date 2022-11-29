@@ -123,8 +123,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.gamma_N            = 0.25                   # substitution elasticity for sector N
         par.mu_L               = 1.8                    # mark-up for sector L
         par.mu_N               = 1.2                    # mark-up for sector N
-        par.kappa_L            = 0.1                    # price rigidity for sector L
-        par.kappa_N            = 0.5                    # price rigidity for sector N
+        par.kappa_L            = 0.04                   # price rigidity for sector L
+        par.kappa_N            = 0.22                   # price rigidity for sector N
     
         # e. government
         par.phi                = 1.5                    # Taylor rule coefficient on inflation
@@ -143,7 +143,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.jump_Z_N           = 0.0                    # initial jump
         par.rho_Z_N            = 0.00                   # AR(1) coefficeint
         par.std_Z_N            = 0.00                   # std.
-        
+
         par.jump_Z_L           = 0.0                    # initial jump
         par.rho_Z_L            = 0.00                   # AR(1) coefficeint
         par.std_Z_L            = 0.00                   # std.
