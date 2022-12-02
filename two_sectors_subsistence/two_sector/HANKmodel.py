@@ -117,9 +117,9 @@ class HANKModelClass(EconModelClass,GEModelClass):
         #par.sigma_psi = np.sqrt(0.50**2*(1-par.rho_z**2))      
     
         # d. price setting           
-        par.alpha_L            = 1/3                    # cobb-douglas for sector L
-        par.alpha_N            = 2/3                    # cobb-douglas for sector N
-        par.gamma_L            = 0.5                    # substitution elasticity for sector L
+        par.alpha_L            = 0.31                    # cobb-douglas for sector L
+        par.alpha_N            = 0.63                    # cobb-douglas for sector N
+        par.gamma_L            = 0.815                    # substitution elasticity for sector L
         par.gamma_N            = 0.25                   # substitution elasticity for sector N
         par.mu_L               = 1.8                    # mark-up for sector L
         par.mu_N               = 1.2                    # mark-up for sector N
@@ -129,7 +129,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         # e. government
         par.phi                = 1.5                    # Taylor rule coefficient on inflation
         par.phi_y              = 0.0                    # Taylor rule coefficient on output
-        par.epsilon            = 0.4                    # Taylor rule inflation weights
+        par.epsilon            = 0.454                  # Taylor rule inflation weights
               
         par.G_target_ss        = 0.0                    # government spending
         par.B_target_ss        = 5.6                    # bond supply

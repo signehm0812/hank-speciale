@@ -71,10 +71,8 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,P,p_N,p_L,vbeg_a_plus,vbe
         c_hat_N[i_fix,:,:] = par.alpha_hh*(P/p_N)**(par.gamma_hh)*(c[i_fix,:,:]) #Correct (c without c_bar)
         c_N[i_fix,:,:] = c_hat_N[i_fix,:,:] + par.c_bar #Correct c_N 
         c_L[i_fix,:,:] = (P/p_L)**(par.gamma_hh)*(1-par.alpha_hh)*(c[i_fix,:,:]) #Correct c_L 
-        #p[i_fix,:,:] = (par.c_bar+P**par.gamma_hh*(par.alpha_hh*(c[i_fix,:,:]-par.c_bar)+(1-par.alpha_hh)*Q**(1-par.gamma_hh)*(c[i_fix,:,:]-par.c_bar)))/(c[i_fix,:,:])
         p[i_fix,:,:] = (p_N*par.c_bar+(P*(c[i_fix,:,:] - par.c_bar)))/(c[i_fix,:,:])
-        u[i_fix,:,:] = (((par.alpha_hh**(1/par.gamma_hh)*(c_hat_N[i_fix,:,:])**((par.gamma_hh-1)/par.gamma_hh)+(1-par.alpha_hh)**(1/par.gamma_hh)*(c_L[i_fix,:,:])**((par.gamma_hh-1)/par.gamma_hh))**(par.gamma_hh/(par.gamma_hh-1)))**(1-par.sigma))/(1-par.sigma)-par.varphi*(((ell[i_fix,:,:])**(1+par.nu))/(1+par.nu))
-        #u[i_fix,:,:] = ((c[i_fix,:,:])**(1-par.sigma))/(1-par.sigma)-par.varphi*(((ell[i_fix,:,:])**(1+par.nu))/(1+par.nu))
+        u[i_fix,:,:] = (c[i_fix,:,:])**(1-par.sigma)/(1-par.sigma)-par.varphi*((ell[i_fix,:,:])**(1+par.nu))/(1+par.nu)
 
         # b. expectation step
         v_a = c[i_fix,:,:]**(-par.sigma)
