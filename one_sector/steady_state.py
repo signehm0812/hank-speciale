@@ -58,37 +58,40 @@ def evaluate_ss(model,do_print=False):
     ss = model.ss
 
     # a. fixed
-    ss.Z = 1.0
-    ss.N = 1.0
     ss.pi = 0.0
+    ss.P = 1.0
+    ss.Y = 1.0
+    ss.Y_star = 1.0
+    ss.pm = 1.0
     
     # b. targets
     ss.r = par.r_target_ss
     ss.A = ss.B = par.B_target_ss
     ss.G = par.G_target_ss
 
-    # c.. monetary policy
-    ss.i = ss.r = ss.istar = 0.0
+    # c. monetary policy
+    ss.i = ss.istar = (1+ss.r)*(1+ss.pi)-1
 
     # d. firms
-    ss.Y = (par.alpha**(1/par.gamma)*par.M**((par.gamma-1)/par.gamma)+(1-par.alpha)**(1/par.gamma)*(ss.Z*ss.N)**((par.gamma-1)/par.gamma))**(par.gamma/(par.gamma-1))
-    print(par.M, par.beta, par.varphi)
-    ss.w = ((par.mu**(par.gamma-1)-par.alpha*par.pm**(1-par.gamma))*(ss.Z**par.gamma/(1-par.alpha)))**(1/(1-par.gamma))
-    ss.d = ss.Y-ss.w*ss.N-par.pm*par.M-ss.adjcost
-    ss.mc = ((1-par.alpha)*(ss.w*ss.Z)**(1-par.gamma)+par.alpha*par.pm**(1-par.gamma))**(1/(1-par.gamma))
+    ss.w = ((par.mu**(par.gamma-1)-par.alpha*ss.pm**(1-par.gamma))*(ss.Z**par.gamma/(1-par.alpha)))**(1/(1-par.gamma))
+    ss.mc = ((1-par.alpha)*(ss.w/ss.Z)**(1-par.gamma)+par.alpha*ss.pm**(1-par.gamma))**(1/(1-par.gamma))
+    ss.N = (1-par.alpha)*(ss.w/ss.mc)**(-par.gamma)*ss.Z**(par.gamma-1)*ss.Y
+    ss.M = par.alpha*(ss.pm/ss.mc)**(-par.gamma)*ss.Y
     ss.adjcost = 0.0
-    #ss.pM = 1.0
-    #ss.d = ss.Y-ss.w*ss.N-ss.adjcost#-ss.pM
+    ss.d = ss.Y-ss.w*ss.N-ss.pm*ss.M-ss.adjcost
     
     # e. government
     ss.tau = ss.r*ss.B + ss.G
+
+    print(f'Z = {ss.Z:.4f},\t M = {ss.M:.4f},\t beta = {par.beta:.4f},\t N = {ss.N:.4f}') #Print so we can see what goes wrong if root solving doesnt converge
+
 
     # f. household 
     model.solve_hh_ss(do_print=do_print)
     model.simulate_hh_ss(do_print=do_print)
 
     # g. market clearing
-    ss.C = ss.Y-ss.G-ss.adjcost-par.pm*par.M
+    ss.C = ss.Y-ss.G-ss.adjcost-ss.pm*ss.M
 
 def objective_ss(x,model,do_print=False):
     """ objective function for finding steady state """
@@ -96,14 +99,16 @@ def objective_ss(x,model,do_print=False):
     par = model.par
     ss = model.ss
 
-    par.M = x[0]
+    ss.Z = x[0]
     par.beta = x[1]
     #par.varphi = x[1]
     
+    if par.beta <=0.94: par.beta = 0.94
+
+    if par.beta > 1/(1+ss.r): par.beta = 1/(1+ss.r)
 
     evaluate_ss(model,do_print=do_print)
     
-    #return np.array([ss.A_hh-ss.B])
     return np.array([ss.A_hh-ss.B,ss.N_hh-ss.N])
 
 def find_ss(model,do_print=False):
@@ -114,8 +119,11 @@ def find_ss(model,do_print=False):
 
     # a. find steady state
     t0 = time.time()
-    #res = optimize.root(objective_ss,[par.beta, par.varphi],method='hybr',tol=par.tol_ss,args=(model))
-    res = optimize.root(objective_ss,[par.M, par.beta],method='hybr',tol=par.tol_ss,args=(model))
+
+    # set initial values:
+    ss.Z = 0.5
+
+    res = optimize.root(objective_ss,[ss.Z, par.beta],method='hybr',tol=par.tol_ss,args=(model))
 
     # final evaluation
     objective_ss(res.x,model)
@@ -124,10 +132,13 @@ def find_ss(model,do_print=False):
     if do_print:
 
         print(f'steady state found in {elapsed(t0)}')
-        print(f' M   = {res.x[0]:8.4f}')
-        print(f' beta   = {res.x[1]:8.4f}')
-        #print(f' varphi = {res.x[1]:8.4f}')
-        print('')
+        print(f' Z   = {res.x[0]:8.4f}')
+        print(f' beta   = {res.x[1]:8.4f}')       
+        print(f' M   = {ss.M:8.4f}')          
+        print(f' N   = {ss.N:8.4f}')          
+        print(f' HH_ell   = {ss.ELL_hh:8.4f}')  
+        print(f' wage  = {ss.w:8.4f}')    
+        print(f' par.varphi   = {par.varphi:8.4f}')
         print(f'Discrepancy in B = {ss.A-ss.A_hh:12.8f}')
         print(f'Discrepancy in C = {ss.C-ss.C_hh:12.8f}')
         print(f'Discrepancy in N = {ss.N-ss.N_hh:12.8f}')
