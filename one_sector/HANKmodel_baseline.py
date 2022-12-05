@@ -3,9 +3,9 @@ import numpy as np
 from EconModel import EconModelClass
 from GEModelTools import GEModelClass
 
-import household_problem
-import steady_state
-import blocks
+import household_problem_baseline
+import steady_state_baseline
+import blocks_baseline
 
 class HANKModelClass(EconModelClass,GEModelClass):
     
@@ -60,9 +60,9 @@ class HANKModelClass(EconModelClass,GEModelClass):
             'Z']
 
         # e. functions
-        self.solve_hh_backwards = household_problem.solve_hh_backwards
-        self.block_pre = blocks.block_pre
-        self.block_post = blocks.block_post
+        self.solve_hh_backwards = household_problem_baseline.solve_hh_backwards
+        self.block_pre = blocks_baseline.block_pre
+        self.block_post = blocks_baseline.block_post
         
     def setup(self):
         """ set baseline parameters """
@@ -138,5 +138,5 @@ class HANKModelClass(EconModelClass,GEModelClass):
         # b. solution
         self.allocate_GE()
 
-    prepare_hh_ss = steady_state.prepare_hh_ss
-    find_ss = steady_state.find_ss        
+    prepare_hh_ss = steady_state_baseline.prepare_hh_ss
+    find_ss = steady_state_baseline.find_ss        
