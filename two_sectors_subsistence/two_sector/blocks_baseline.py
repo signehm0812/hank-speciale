@@ -48,6 +48,7 @@ def block_pre(par,ini,ss,path,ncols=1):
         d[:] = Y-w*N-pm*M-adjcost
 
         # b. monetary policy
+        Y_star[:] = ss.Y
         i[:] = istar + par.phi*pi + par.phi_y*(Y-Y_star)
         i_lag = lag(ini.i,i)
         r[:] = (1+i_lag)/(1+pi)-1

@@ -87,10 +87,10 @@ class HANKModelClass_baseline(EconModelClass,GEModelClass):
         #par.sigma_psi = np.sqrt(0.50**2*(1-par.rho_z**2))      
     
         # d. price setting           
-        par.alpha            = 0.33                    # cobb-douglas for sector L
-        par.gamma            = 0.53                    # substitution elasticity for sector L
-        par.mu               = 1.5                     # mark-up for sector L
-        par.kappa            = 0.13                    # price rigidity for sector L
+        par.alpha            = 0.5                    # cobb-douglas
+        par.gamma            = 0.5                    # substitution elasticity
+        par.mu               = 1.5                     # mark-up 
+        par.kappa            = 0.125                    # price rigidity 
     
         # e. government
         par.phi                = 1.5                    # Taylor rule coefficient on inflation
