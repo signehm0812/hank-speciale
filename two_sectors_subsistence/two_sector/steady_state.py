@@ -192,3 +192,10 @@ def find_ss(model,do_print=False):
         print(f'Discrepancy in C_L = {ss.C_L-ss.C_L_hh:12.8f}')
         print(f'Discrepancy in C_N = {ss.C_N-ss.C_N_hh:12.8f}')
         print(f'Discrepancy in N = {ss.N_L+ss.N_N-ss.N_hh:12.8f}')
+
+        vars = ['Y','N','M','mc','d','C','w','pm','pi']
+        values_N = []
+        for var in vars:
+            values_N.append(f'ss.{var}_N')
+        
+

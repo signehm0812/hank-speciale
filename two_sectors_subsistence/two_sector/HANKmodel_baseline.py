@@ -7,7 +7,7 @@ import household_problem_baseline
 import steady_state_baseline
 import blocks_baseline
 
-class HANKModelClass(EconModelClass,GEModelClass):
+class HANKModelClass_baseline(EconModelClass,GEModelClass):
     
     #########
     # setup #
@@ -88,7 +88,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
     
         # d. price setting           
         par.alpha            = 0.33                    # cobb-douglas for sector L
-        par.gamma            = 0.53                   # substitution elasticity for sector L
+        par.gamma            = 0.53                    # substitution elasticity for sector L
         par.mu               = 1.5                     # mark-up for sector L
         par.kappa            = 0.13                    # price rigidity for sector L
     

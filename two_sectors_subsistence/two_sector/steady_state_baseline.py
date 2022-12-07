@@ -73,7 +73,7 @@ def evaluate_ss(model,do_print=False):
     ss.i = ss.istar = (1+ss.r)*(1+ss.pi)-1
 
     # d. firms
-    ss.w = ((par.mu**(par.gamma-1)-par.alpha*ss.pm**(1-par.gamma))*(ss.Z**par.gamma/(1-par.alpha)))**(1/(1-par.gamma))
+    ss.w = ((par.mu**(par.gamma-1)-par.alpha*ss.pm**(1-par.gamma))/(1-par.alpha))**(1/(1-par.gamma))*ss.Z
     ss.mc = ((1-par.alpha)*(ss.w/ss.Z)**(1-par.gamma)+par.alpha*ss.pm**(1-par.gamma))**(1/(1-par.gamma))
     ss.N = (1-par.alpha)*(ss.w/ss.mc)**(-par.gamma)*ss.Z**(par.gamma-1)*ss.Y
     ss.M = par.alpha*(ss.pm/ss.mc)**(-par.gamma)*ss.Y
