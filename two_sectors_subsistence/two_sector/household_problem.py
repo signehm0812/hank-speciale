@@ -6,7 +6,7 @@ import numba as nb
 from consav.linear_interp import interp_1d_vec
 
 @nb.njit        
-def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,P,p_N,p_L,vbeg_a_plus,vbeg_a,a,c,c_hat_N,c_N,c_L,ell,n,p,u):
+def solve_hh_backwards(par,z_trans,w_N,r,i,d_N,d_L,tau,Q,P,p_N,p_L,vbeg_a_plus,vbeg_a,a,c,c_hat_N,c_N,c_L,ell,n,p,u):
     """ solve backwards with vbeg_a_plus from previous iteration """
 
     for i_fix in range(par.Nfix):
@@ -78,3 +78,4 @@ def solve_hh_backwards(par,z_trans,w_N,r,d_N,d_L,tau,Q,P,p_N,p_L,vbeg_a_plus,vbe
         v_a = c[i_fix,:,:]**(-par.sigma)
         vbeg_a[i_fix] = (1+r)*z_trans[i_fix]@v_a
         c[i_fix,:,:] = c[i_fix,:,:] + par.c_bar*(p_N/P)
+        

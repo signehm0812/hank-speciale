@@ -22,7 +22,7 @@ class HANKModelClass_baseline(EconModelClass,GEModelClass):
         # b. household
         self.grids_hh = ['a'] # grids
         self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['w','r','d','tau'] # direct inputs
+        self.inputs_hh = ['w','r','i','d','tau'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
         self.outputs_hh = ['a','c','ell','n','u'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
