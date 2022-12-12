@@ -16,7 +16,7 @@ def solve_hh_backwards(par,z_trans,w,r,i,d,tau,vbeg_a_plus,vbeg_a,a,c,ell,n,u):
 
             # i. prepare
             z = par.z_grid[i_z]
-            T = d*z - tau*z
+            T = d*z - tau*z + par.chi 
             fac = (w*z/par.varphi)**(1/par.nu)
 
             # ii. use focs
@@ -25,7 +25,7 @@ def solve_hh_backwards(par,z_trans,w,r,i,d,tau,vbeg_a_plus,vbeg_a,a,c,ell,n,u):
             n_endo = ell_endo*z
 
             # iii. re-interpolate
-            m_endo = c_endo + par.a_grid - w*n_endo - T 
+            m_endo = c_endo + par.a_grid - w*n_endo - T + par.c_bar
             m_exo = (1+r)*par.a_grid
 
             interp_1d_vec(m_endo,c_endo,m_exo,c[i_fix,i_z,:])
@@ -33,7 +33,7 @@ def solve_hh_backwards(par,z_trans,w,r,i,d,tau,vbeg_a_plus,vbeg_a,a,c,ell,n,u):
             n[i_fix,i_z,:] = ell[i_fix,i_z,:]*z
 
             # iv. saving
-            a[i_fix,i_z,:] = m_exo + w*n[i_fix,i_z,:] + T - c[i_fix,i_z,:]
+            a[i_fix,i_z,:] = m_exo + w*n[i_fix,i_z,:] + T - c[i_fix,i_z,:] - par.c_bar
 
             # v. refinement at constraint
             for i_a in range(par.Na):
@@ -47,7 +47,7 @@ def solve_hh_backwards(par,z_trans,w,r,i,d,tau,vbeg_a_plus,vbeg_a,a,c,ell,n,u):
                     elli = ell[i_fix,i_z,i_a]
                     for i in range(30):
 
-                        ci = (1+r)*par.a_grid[i_a] + w*z*elli + T - par.a_min # from binding constraint
+                        ci = (1+r)*par.a_grid[i_a] + w*z*elli + T - par.a_min - par.c_bar# from binding constraint
 
                         error = elli - fac*ci**(-par.sigma/par.nu)
                         if np.abs(error) < 1e-11:
@@ -74,3 +74,4 @@ def solve_hh_backwards(par,z_trans,w,r,i,d,tau,vbeg_a_plus,vbeg_a,a,c,ell,n,u):
         #u[i_fix,:,:] = ci**(1-par.sigma)/(1-par.sigma)-par.varphi*(elli**(1+par.nu))/(1+par.nu)
         v_a = c[i_fix,:,:]**(-par.sigma)
         vbeg_a[i_fix] = (1+r)*z_trans[i_fix]@v_a
+        c[i_fix,:,:] = c[i_fix,:,:] + par.c_bar

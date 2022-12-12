@@ -57,8 +57,8 @@ def block_pre(par,ini,ss,path,ncols=1):
 
         # c. government
         B[:] = ss.B
-        tau[:] = r*B
-        G[:] = tau-r*B
+        tau[:] = r*B + par.chi
+        G[:] = tau-r*B - par.chi
         
         # d. aggregates
         A[:] = B[:] = ss.B

@@ -72,12 +72,14 @@ class HANKModelClass_baseline(EconModelClass,GEModelClass):
         par.Nfix               = 1                     # number of fixed discrete states (either work in L or N sector)
         par.Nz                 = 7                     # number of stochastic discrete states (here productivity)
         par.r_target_ss        = 1.02**(1/4)-1
+        par.chi                = 0.05
 
         # a. preferences
         par.beta               = 0.9875                # discount factor (guess, calibrated in ss)
         par.varphi             = 1.0                   # disutility of labor
         par.sigma              = 2.0                   # inverse of intertemporal elasticity of substitution
         par.nu                 = 2.0                   # inverse Frisch elasticity
+        par.c_bar              = 0.05
 
         # c. income parameters     
         par.rho_z              = 0.9777                # AR(1) parameter

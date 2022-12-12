@@ -81,9 +81,9 @@ def evaluate_ss(model,do_print=False):
     ss.d = ss.Y-ss.w*ss.N-ss.pm*ss.M-ss.adjcost
     
     # e. government
-    ss.tau = ss.r*ss.B + ss.G
+    ss.tau = ss.r*ss.B + ss.G + par.chi
 
-    print(f'Z = {ss.Z:.4f},\t M = {ss.M:.4f},\t beta = {par.beta:.4f},\t N = {ss.N:.4f}') #Print so we can see what goes wrong if root solving doesnt converge
+    #print(f'Z = {ss.Z:.4f},\t M = {ss.M:.4f},\t beta = {par.beta:.4f},\t N = {ss.N:.4f}') #Print so we can see what goes wrong if root solving doesnt converge
 
 
     # f. household 
