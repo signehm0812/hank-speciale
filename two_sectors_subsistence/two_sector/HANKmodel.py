@@ -155,8 +155,8 @@ class HANKModelClass(EconModelClass,GEModelClass):
      
         #par.jump_pm_N          = 0.01
         par.jump_pm_N          = 0.0
-        par.rho_pm_N           = 0.9
-        par.std_pm_N           = 0.01
+        par.rho_pm_N           = 0.75
+        par.std_pm_N           = 0.0025
 
         # h. misc.
         par.T                  = 500                    # length of path        
