@@ -24,7 +24,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         self.pols_hh = ['a'] # policy functions
         self.inputs_hh = ['w_N','r','i','d_N','d_L','tau','p_N','p_L','Q','P'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
-        self.outputs_hh = ['a','c','c_hat_N','c_N','c_L','ell','n','p','u'] # outputs
+        self.outputs_hh = ['a','c','c_hat_N','c_N','c_L','ell','n','p','u','e'] # outputs
         self.intertemps_hh = ['vbeg_a'] # intertemporal variables
 
         # c. GE

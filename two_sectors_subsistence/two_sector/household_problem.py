@@ -6,7 +6,7 @@ import numba as nb
 from consav.linear_interp import interp_1d_vec
 
 @nb.njit        
-def solve_hh_backwards(par,z_trans,w_N,r,i,d_N,d_L,tau,Q,P,p_N,p_L,vbeg_a_plus,vbeg_a,a,c,c_hat_N,c_N,c_L,ell,n,p,u):
+def solve_hh_backwards(par,z_trans,w_N,r,i,d_N,d_L,tau,Q,P,p_N,p_L,vbeg_a_plus,vbeg_a,a,c,c_hat_N,c_N,c_L,ell,n,p,u,e):
     """ solve backwards with vbeg_a_plus from previous iteration """
 
     for i_fix in range(par.Nfix):
@@ -73,6 +73,11 @@ def solve_hh_backwards(par,z_trans,w_N,r,i,d_N,d_L,tau,Q,P,p_N,p_L,vbeg_a_plus,v
         c_L[i_fix,:,:] = (P/p_L)**(par.gamma_hh)*(1-par.alpha_hh)*(c[i_fix,:,:]) #Correct c_L 
         p[i_fix,:,:] = (p_N*par.c_bar+(P*(c[i_fix,:,:] - par.c_bar)))/(c[i_fix,:,:])
         u[i_fix,:,:] = (c[i_fix,:,:])**(1-par.sigma)/(1-par.sigma)-par.varphi*((ell[i_fix,:,:])**(1+par.nu))/(1+par.nu)
+        e[i_fix,:,:] = par.gamma_hh*(par.alpha_hh*(p_N/P)**(-par.gamma_hh)*(c[i_fix,:,:]))/(par.alpha_hh*(p_N/P)**(-par.gamma_hh)*(c[i_fix,:,:])+par.c_bar) 
+        
+        
+        #(c[i_fix,:,:])**(1-par.sigma)/(1-par.sigma)-par.varphi*((ell[i_fix,:,:])**(1+par.nu))/(1+par.nu)
+        
 
         # b. expectation step
         v_a = c[i_fix,:,:]**(-par.sigma)
